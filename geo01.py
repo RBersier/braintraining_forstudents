@@ -9,7 +9,6 @@ import time
 import database
 import datetime
 
-
 # Main window
 # graphical variables
 l = 1000 # canvas length
@@ -21,7 +20,8 @@ mycircle= None #objet utilisé pour le cercle rouge
 
 
 #important data (to save)
-pseudo="Gaston" #provisory pseudo for user
+entry_pseudo=None
+pseudo=""
 exercise="GEO01"
 nbtrials=0 #number of total trials
 nbsuccess=0 #number of successfull trials
@@ -87,11 +87,6 @@ def next_point(event):
     lbl_target.configure(text=f"Cliquez sur le point ({round(target_x, 1)}, {round(target_y, 1)}). Echelle x -10 à +10, y-5 à +5")
 
 
-def save_game(event):
-    # TODO
-    print("dans save")
-
-
 def display_timer():
     duration=datetime.datetime.now()-start_date #elapsed time since beginning, in time with decimals
     duration_s=int(duration.total_seconds()) #idem but in seconds (integer)
@@ -99,10 +94,31 @@ def display_timer():
     lbl_duration.configure(text="{:02d}".format(int(duration_s /60)) + ":" + "{:02d}".format(duration_s %60))
     window_geo01.after(1000, display_timer) #recommencer après 15 ms
 
+def finish():
+    global exercise, nbtrials, nbsuccess, pseudo, entry_pseudo
+
+    # Obtenir la valeur de l'entrée pour pseudo
+    pseudo = entry_pseudo.get()
+
+    # Calculer le temps écoulé
+    end_date = datetime.datetime.now()
+    elapsed_time = end_date - start_date
+    total_seconds = elapsed_time.total_seconds()
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    duration = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+
+    # Enregistrer les valeurs dans la base de données
+    database.save_results(exercise, pseudo, duration, nbtrials, nbsuccess)
+
+    # Fermer la fenêtre et la base de donnée
+    database.close_dbconnection()
+    window_geo01.destroy()
+
 
 def open_window_geo_01(window):
     # window = tk.Tk()
-    global window_geo01, hex_color, lbl_title, lbl_duration, lbl_result, lbl_target, canvas, start_date
+    global window_geo01, hex_color, lbl_title, lbl_duration, lbl_result, lbl_target, canvas, start_date, pseudo, entry_pseudo
     window_geo01 = tk.Toplevel(window)
 
     window_geo01.title("Exercice de géométrie")
@@ -135,7 +151,6 @@ def open_window_geo_01(window):
     btn_next = tk.Button(window_geo01, text="Suivant", font=("Arial", 15))
     btn_next.grid(row=5, column=0, padx=5, pady=5, columnspan=6)
 
-
     btn_finish = tk.Button(window_geo01, text="Terminer", font=("Arial", 15))
     btn_finish.grid(row=6, column=0, columnspan=6)
 
@@ -148,7 +163,7 @@ def open_window_geo_01(window):
     # binding actions (canvas & buttons)
     canvas.bind("<Button-1>", canvas_click)
     btn_next.bind("<Button-1>", next_point)
-    btn_finish.bind("<Button-1>", save_game)
+    btn_finish.bind("<ButtonRelease-1>",lambda event=None: finish())
 
     # main loop
     window_geo01.mainloop()
