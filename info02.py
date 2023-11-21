@@ -11,7 +11,8 @@ import datetime
 from tkinter.messagebox import *
 
 #important data (to save)
-pseudo="Gaston" #provisory pseudo for user
+entry_pseudo=None
+pseudo=""
 exercise="INFO02"
 nbtrials=0 #number of total trials
 nbsuccess=0 #number of successfull trials
@@ -46,9 +47,27 @@ def next(event):
     entry_n2.delete(0, 'end')
 
 
-def save_game(event):
-    print("dans save")
-    # TODO
+def finish():
+    global exercise, nbtrials, nbsuccess, pseudo, entry_pseudo
+
+    # Obtenir la valeur de l'entrée pour pseudo
+    pseudo = entry_pseudo.get()
+
+    # Calculer le temps écoulé
+    end_date = datetime.datetime.now()
+    elapsed_time = end_date - start_date
+    total_seconds = elapsed_time.total_seconds()
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    duration = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+
+    # Enregistrer les valeurs dans la base de données
+    database.save_results(exercise, pseudo, duration, nbtrials, nbsuccess)
+
+    # Fermer la fenêtre et la base de donnée
+    database.close_dbconnection()
+    window_info02.destroy()
+
 
 
 def test(event):
@@ -77,7 +96,7 @@ def display_timer():
 
 
 def open_window_info_02(window):
-    global window_info02, lbl_duration, lbl_result, entry_n2, label_u2, label_n1, hex_color, start_date
+    global window_info02, lbl_duration, lbl_result, entry_n2, label_u2, label_n1, hex_color, start_date, entry_pseudo
     window_info02 = tk.Toplevel(window)
 
     #window_info02 = tk.Tk()
@@ -126,7 +145,7 @@ def open_window_info_02(window):
     # binding actions (entry & buttons)
     entry_n2.bind("<Return>", test)
     btn_next.bind("<Button-1>", next)
-    btn_finish.bind("<Button-1>", save_game)
+    btn_finish.bind("<ButtonRelease-1>",lambda event=None: finish())
 
     # Main loop
     window_info02.mainloop()

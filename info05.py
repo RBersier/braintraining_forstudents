@@ -21,7 +21,8 @@ xmed=250 #middle of 2 color rectangles
 
 
 #important data (to save)
-pseudo="Gaston" #provisory pseudo for user
+entry_pseudo=None
+pseudo=""
 exercise="INFO05"
 nbtrials=0 #number of total trials
 nbsuccess=0 #number of successfull trials
@@ -46,6 +47,27 @@ def next_color(event):
     global rgb
     rgb = [random.randint(0,255),random.randint(0,255),random.randint(0,255)]
     display();
+
+def finish():
+    global exercise, nbtrials, nbsuccess, pseudo, entry_pseudo
+
+    # Obtenir la valeur de l'entrée pour pseudo
+    pseudo = entry_pseudo.get()
+
+    # Calculer le temps écoulé
+    end_date = datetime.datetime.now()
+    elapsed_time = end_date - start_date
+    total_seconds = elapsed_time.total_seconds()
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    duration = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+
+    # Enregistrer les valeurs dans la base de données
+    database.save_results(exercise, pseudo, duration, nbtrials, nbsuccess)
+
+    # Fermer la fenêtre et la base de donnée
+    database.close_dbconnection()
+    window_info05.destroy()
 
 
 #display the exercise and response
@@ -204,7 +226,7 @@ def display_timer():
 
 
 def open_window_info_05(window):
-    global window_info05, lbl_duration, lbl_result, hex_color, start_date, slider_r, slider_g, slider_b, slider_v, entry_response, canvas
+    global window_info05, lbl_duration, lbl_result, hex_color, start_date, slider_r, slider_g, slider_b, slider_v, entry_response, canvas, entry_pseudo
     window_info05 = tk.Toplevel(window)
     window_info05.title("La couleur perdue")
     window_info05.geometry("1100x900")
@@ -270,7 +292,7 @@ def open_window_info_05(window):
     btn_next.bind("<Button-1>", next_color)
     entry_response.bind("<Return>", test)
     slider_v.bind("<ButtonRelease-1>", sl_v)
-    btn_finish.bind("<Button-1>", save_game)
+    btn_finish.bind("<ButtonRelease-1>",lambda event=None: finish())
 
     # main loop
     window_info05.mainloop()

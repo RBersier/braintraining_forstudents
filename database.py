@@ -42,5 +42,14 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
     query5 = "INSERT INTO games_has_players (game_id, player_id, duration, startdate, nb_ok, nb_tot) values (%s, %s, %s, %s, %s, %s)"
     cursor.execute(query5, (data1[0], data2[0], duration, date_hour, nbok, nbtrials))
 
+def read_result():
+    open_dbconnection()
+    cursor = db_connection.cursor()
+    query1 = "SELECT players.pseudonym, games_has_players.startdate, games_has_players.duration, games.exercise, games_has_players.nb_ok, games_has_players.nb_tot FROM games_has_players INNER JOIN players ON games_has_players.player_id = players.id INNER JOIN games ON games_has_players.game_id = games.id"
+    cursor.execute(query1,)
+    data = cursor.fetchall()
+
+    return data
+
 def close_dbconnection():
     db_connection.close()

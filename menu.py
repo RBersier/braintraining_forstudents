@@ -3,11 +3,14 @@
 # JCY oct 23
 # PRO DB PY
 #############################
-
+import mysql.connector
 import tkinter as tk
+from tkinter import *
+from tkinter import ttk
 import geo01
 import info02
 import info05
+import database
 
 # exercises array
 a_exercise=["geo01", "info02", "info05"]
@@ -24,8 +27,48 @@ def exercise(event,exer):
 
 #call display_results
 def display_result(event):
-    # TODO
-    print("display_result")
+    # Créer une nouvelle fenêtre pour afficher les résultats
+    results_window = tk.Toplevel(window)
+    results_window.title("Résultats")
+    style = ttk.Style()
+
+    # Définission du Tableau
+    result_table = ttk.Treeview(results_window)
+    result_table["columns"] = ("Élève", "Date Heure", "Temps", "Exercice", "Nb OK", "Nb Total", "% Réussi")
+    result_table.column("#0", width=0, stretch=NO)
+    result_table.column("Élève", anchor=CENTER, width=200)
+    result_table.column("Date Heure", anchor=CENTER, width=200)
+    result_table.column("Temps", anchor=CENTER, width=200)
+    result_table.column("Exercice", anchor=CENTER, width=200)
+    result_table.column("Nb OK", anchor=CENTER, width=200)
+    result_table.column("Nb Total", anchor=CENTER, width=200)
+    result_table.column("% Réussi", anchor=CENTER, width=200)
+
+    result_table.heading("#0", text="", anchor=CENTER)
+    result_table.heading("Élève", anchor=CENTER, text="Élève")
+    result_table.heading("Date Heure", anchor=CENTER, text="Date Heure")
+    result_table.heading("Temps", anchor=CENTER, text="Temps")
+    result_table.heading("Exercice", anchor=CENTER, text="Exercice")
+    result_table.heading("Nb OK", anchor=CENTER, text="Nb OK")
+    result_table.heading("Nb Total", anchor=CENTER, text="Nb Total")
+    result_table.heading("% Réussi", anchor=CENTER, text="% Réussi")
+
+    #affichage des donnée
+    data = database.read_result()
+    for i, result in enumerate(data):
+        percent = (result[4]/result[5]) * 100
+        progress_value = int(percent)
+        if percent <= 33:
+            style.configure("Custom.Horizontal.TProgressbar", background="red")
+        elif 34 <= percent <= 67:
+            style.configure("Custom.Horizontal.TProgressbar", background="orange")
+        else:
+            style.configure("Custom.Horizontal.TProgressbar", background="green")
+
+        progress_bar = ttk.Progressbar(result_table, orient="horizontal", length=100, mode="determinate", value=progress_value, style="Custom.Horizontal.TProgressbar")
+        result_table.insert(parent='', index='end', iid=i, values=(result[0], result[1], result[2], result[3], result[4], result[5], progress_bar))
+
+    result_table.pack()
 
 
 # Main window
