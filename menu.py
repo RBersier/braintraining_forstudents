@@ -29,6 +29,7 @@ def exercise(event,exer):
 def display_result(event):
     results_window = tk.Toplevel(window)
     results_window.title("Résultats")
+    results_window.geometry("1000x500")
     rgb_color_result = (139, 201, 194)
     hex_color_result = '#%02x%02x%02x' % rgb_color_result
     results_window.configure(bg=hex_color_result)
@@ -37,14 +38,41 @@ def display_result(event):
     style.configure("red.Horizontal.TProgressbar", background='red')
     style.configure("yellow.Horizontal.TProgressbar", background='yellow')
     style.configure("green.Horizontal.TProgressbar", background='green')
-    frame = Frame(results_window, background="white")
-    frame.pack()
+    frame1 = Frame(results_window, background="white")
+    frame1.pack(side=TOP, pady=10)
+    frame2 = Frame(results_window, background="white", width=900)
+    frame2.pack(side=TOP, pady=10)
+    frame3 = Frame(results_window, background="white", width=900)
+    frame3.pack(side=TOP, pady=10)
 
-    # Titres
-    headers = ["Élève", "Date Heure", "Temps", "Exercice", "Nb OK", "Nb Total", "% Réussi"]
+    # Titre
+    label_title = Label(frame1, text="TRAINING : AFFICHAGE", font=("Arial", 18, "bold"))
+    label_title.pack()
+
+    # Filtre
+    label_pseudo = Label(frame2, text="Pseudo:", font=("Arial", 12))
+    label_pseudo.grid(row=1, column=1, padx=25)
+    entry_pseudo = Entry(frame2, font=("Arial", 15), width=10)
+    entry_pseudo.grid(row=1, column=2)
+    label_exercise = Label(frame2, text="Exercice:", font=("Arial", 12))
+    label_exercise.grid(row=1, column=3, padx=25)
+    entry_exercise = Entry(frame2, font=("Arial", 15), width=10)
+    entry_exercise.grid(row=1, column=4)
+    label_startdate = Label(frame2, text="Date de début:", font=("Arial", 12))
+    label_startdate.grid(row=1, column=5, padx=25)
+    entry_startdate = Entry(frame2, font=("Arial", 15), width=10)
+    entry_startdate.grid(row=1, column=6)
+    label_enddate = Label(frame2, text="Date de fin:", font=("Arial", 12))
+    label_enddate.grid(row=1, column=7, padx=25)
+    entry_enddate = Entry(frame2, font=("Arial", 15), width=10)
+    entry_enddate.grid(row=1, column=8)
+
+
+    # Nom de colonne
+    headers = ["Élève", "Date et Heure", "Temps", "Exercice", "Nb OK", "Nb Total", "% Réussi"]
     for col, header in enumerate(headers):
-        label = tk.Label(frame, text=header, font=("Arial", 12, "bold"))
-        label.grid(row=0, column=col, padx=5, pady=5, sticky=tk.W)
+        label = tk.Label(frame3, text=header, font=("Arial", 12, "bold"))
+        label.grid(row=0, column=col)
 
     # Données
     data = database.read_result()
@@ -52,20 +80,18 @@ def display_result(event):
         percent = (result[4] / result[5]) * 100
         progress_value = int(percent)
         if progress_value <= 33:
-            progress_bar = ttk.Progressbar(frame, orient="horizontal", length=100, mode="determinate", value=progress_value, style="red.Horizontal.TProgressbar")
+            progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="red.Horizontal.TProgressbar")
         elif 34 <= progress_value <= 66:
-            progress_bar = ttk.Progressbar(frame, orient="horizontal", length=100, mode="determinate", value=progress_value, style="yellow.Horizontal.TProgressbar")
+            progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="yellow.Horizontal.TProgressbar")
         else:
-            progress_bar = ttk.Progressbar(frame, orient="horizontal", length=100, mode="determinate", value=progress_value, style="green.Horizontal.TProgressbar")
+            progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="green.Horizontal.TProgressbar")
 
-        progress_bar.grid(row=i + 1, column=len(headers) - 1, padx=5, pady=5, sticky=tk.W)
+        progress_bar.grid(row=i + 1, column=len(headers) - 1)
 
         # Affichage des données
         for col, value in enumerate(result):
-            label = tk.Label(frame, text=value, font=("Arial", 10))
-            label.grid(row=i+1, column=col, padx=5, pady=5, sticky=tk.W)
-
-
+            label = tk.Label(frame3, text=value, font=("Arial", 10))
+            label.grid(row=i+1, column=col)
 
 # Main windows
 window = tk.Tk()
