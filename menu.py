@@ -27,48 +27,44 @@ def exercise(event,exer):
 
 #call display_results
 def display_result(event):
-    # Créer une nouvelle fenêtre pour afficher les résultats
     results_window = tk.Toplevel(window)
     results_window.title("Résultats")
+    rgb_color_result = (139, 201, 194)
+    hex_color_result = '#%02x%02x%02x' % rgb_color_result
+    results_window.configure(bg=hex_color_result)
     style = ttk.Style()
+    style.theme_use('clam')
+    style.configure("red.Horizontal.TProgressbar", background='red')
+    style.configure("yellow.Horizontal.TProgressbar", background='yellow')
+    style.configure("green.Horizontal.TProgressbar", background='green')
+    frame = Frame(results_window, background="white")
+    frame.pack()
 
-    # Définission du Tableau
-    result_table = ttk.Treeview(results_window)
-    result_table["columns"] = ("Élève", "Date Heure", "Temps", "Exercice", "Nb OK", "Nb Total", "% Réussi")
-    result_table.column("#0", width=0, stretch=NO)
-    result_table.column("Élève", anchor=CENTER, width=200)
-    result_table.column("Date Heure", anchor=CENTER, width=200)
-    result_table.column("Temps", anchor=CENTER, width=200)
-    result_table.column("Exercice", anchor=CENTER, width=200)
-    result_table.column("Nb OK", anchor=CENTER, width=200)
-    result_table.column("Nb Total", anchor=CENTER, width=200)
-    result_table.column("% Réussi", anchor=CENTER, width=200)
+    # Titres
+    headers = ["Élève", "Date Heure", "Temps", "Exercice", "Nb OK", "Nb Total", "% Réussi"]
+    for col, header in enumerate(headers):
+        label = tk.Label(frame, text=header, font=("Arial", 12, "bold"))
+        label.grid(row=0, column=col, padx=5, pady=5, sticky=tk.W)
 
-    result_table.heading("#0", text="", anchor=CENTER)
-    result_table.heading("Élève", anchor=CENTER, text="Élève")
-    result_table.heading("Date Heure", anchor=CENTER, text="Date Heure")
-    result_table.heading("Temps", anchor=CENTER, text="Temps")
-    result_table.heading("Exercice", anchor=CENTER, text="Exercice")
-    result_table.heading("Nb OK", anchor=CENTER, text="Nb OK")
-    result_table.heading("Nb Total", anchor=CENTER, text="Nb Total")
-    result_table.heading("% Réussi", anchor=CENTER, text="% Réussi")
-
-    #affichage des donnée
+    # Données
     data = database.read_result()
     for i, result in enumerate(data):
-        percent = (result[4]/result[5]) * 100
+        percent = (result[4] / result[5]) * 100
         progress_value = int(percent)
-        if percent <= 33:
-            style.configure("Custom.Horizontal.TProgressbar", background="red")
-        elif 34 <= percent <= 67:
-            style.configure("Custom.Horizontal.TProgressbar", background="orange")
+        if progress_value <= 33:
+            progress_bar = ttk.Progressbar(frame, orient="horizontal", length=100, mode="determinate", value=progress_value, style="red.Horizontal.TProgressbar")
+        elif 34 <= progress_value <= 66:
+            progress_bar = ttk.Progressbar(frame, orient="horizontal", length=100, mode="determinate", value=progress_value, style="yellow.Horizontal.TProgressbar")
         else:
-            style.configure("Custom.Horizontal.TProgressbar", background="green")
+            progress_bar = ttk.Progressbar(frame, orient="horizontal", length=100, mode="determinate", value=progress_value, style="green.Horizontal.TProgressbar")
 
-        progress_bar = ttk.Progressbar(result_table, orient="horizontal", length=100, mode="determinate", value=progress_value, style="Custom.Horizontal.TProgressbar")
-        result_table.insert(parent='', index='end', iid=i, values=(result[0], result[1], result[2], result[3], result[4], result[5], progress_bar))
+        progress_bar.grid(row=i + 1, column=len(headers) - 1, padx=5, pady=5, sticky=tk.W)
 
-    result_table.pack()
+        # Affichage des données
+        for col, value in enumerate(result):
+            label = tk.Label(frame, text=value, font=("Arial", 10))
+            label.grid(row=i+1, column=col, padx=5, pady=5, sticky=tk.W)
+
 
 
 # Main window

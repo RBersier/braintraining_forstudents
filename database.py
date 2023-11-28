@@ -48,7 +48,6 @@ def read_result():
     query1 = "SELECT players.pseudonym, games_has_players.startdate, games_has_players.duration, games.exercise, games_has_players.nb_ok, games_has_players.nb_tot FROM games_has_players INNER JOIN players ON games_has_players.player_id = players.id INNER JOIN games ON games_has_players.game_id = games.id"
     cursor.execute(query1,)
     data = cursor.fetchall()
-
     return data
 
 def close_dbconnection():
