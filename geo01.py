@@ -124,7 +124,7 @@ def open_window_geo_01(window):
     window_geo01.title("Exercice de géométrie")
     window_geo01.geometry("1100x900")
 
-    # color définition
+    # colors définition
     rgb_color = (139, 201, 194)
     hex_color = '#%02x%02x%02x' % rgb_color # translation in hexa
     window_geo01.configure(bg=hex_color)

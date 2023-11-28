@@ -139,7 +139,7 @@ def open_window_info_02(window):
 
     start_date = datetime.datetime.now()
     display_timer()
-    # first call of next_point
+    # first call of next_points
     next(event=None)
 
     # binding actions (entry & buttons)

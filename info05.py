@@ -282,7 +282,7 @@ def open_window_info_05(window):
     btn_finish.grid(row=8, column=2)
 
 
-    # first call of next_point
+    # first call of next_points
     display_wheel_color()
     next_color(event=None)
     start_date = datetime.datetime.now()
