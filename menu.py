@@ -67,7 +67,7 @@ def display_result(event):
 
 
 
-# Main window
+# Main windows
 window = tk.Tk()
 window.title("Training, entrainement cérébral")
 window.geometry("1100x900")
