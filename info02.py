@@ -10,7 +10,7 @@ import database
 import datetime
 from tkinter.messagebox import *
 
-#important data (to save)
+#important data (to saves)
 entry_pseudo=None
 pseudo=""
 exercise="INFO02"

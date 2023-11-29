@@ -24,7 +24,7 @@ mycircle= None #objet utilisé pour le cercle rouge
 entry_pseudo=None
 pseudo=""
 exercise="GEO01"
-nbtrials=0 #number of total trials
+nbtrials=0 #number of total trial
 nbsuccess=0 #number of successfull trials
 
 

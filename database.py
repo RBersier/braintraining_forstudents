@@ -42,7 +42,7 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
     query5 = "INSERT INTO games_has_players (game_id, player_id, duration, startdate, nb_ok, nb_tot) values (%s, %s, %s, %s, %s, %s)"
     cursor.execute(query5, (data1[0], data2[0], duration, date_hour, nbok, nbtrials))
 
-# all data for show the result
+# all data for show the results
 def read_result(pseudo, exercise, startdate, enddate):
     open_dbconnection()
     cursor = db_connection.cursor()

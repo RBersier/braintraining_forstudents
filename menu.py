@@ -1,8 +1,8 @@
-#############################
+############################
 # Training (Menu)
 # JCY oct 23
 # PRO DB PY
-#############################
+############################
 import mysql.connector
 import tkinter as tk
 from tkinter import *

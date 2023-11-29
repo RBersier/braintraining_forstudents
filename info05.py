@@ -66,7 +66,7 @@ def finish():
         minutes, seconds = divmod(remainder, 60)
         duration = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
 
-        # Enregistrer les valeurs dans la base de données
+        # Enregistrer les valeurs dans la base de donnée
         database.save_results(exercise, pseudo, duration, nbtrials, nbsuccess)
 
         # Fermer la fenêtre et la base de donnée
