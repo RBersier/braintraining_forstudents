@@ -53,20 +53,26 @@ def finish():
     # Obtenir la valeur de l'entrée pour pseudo
     pseudo = entry_pseudo.get()
 
-    # Calculer le temps écoulé
-    end_date = datetime.datetime.now()
-    elapsed_time = end_date - start_date
-    total_seconds = elapsed_time.total_seconds()
-    hours, remainder = divmod(total_seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    duration = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+    # condition pour pas de division par 0
+    if nbtrials == 0:
+        messagebox.showerror(title="Erreur", message="Vous devez faire au moin 1 essai avant de terminer la partie")
+    else:
+        # Calculer le temps écoulé
+        end_date = datetime.datetime.now()
+        elapsed_time = end_date - start_date
+        total_seconds = elapsed_time.total_seconds()
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        duration = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
 
-    # Enregistrer les valeurs dans la base de données
-    database.save_results(exercise, pseudo, duration, nbtrials, nbsuccess)
+        # Enregistrer les valeurs dans la base de données
+        database.save_results(exercise, pseudo, duration, nbtrials, nbsuccess)
 
-    # Fermer la fenêtre et la base de donnée
-    database.close_dbconnection()
-    window_info02.destroy()
+        # Fermer la fenêtre et la base de donnée
+        database.close_dbconnection()
+        nbtrials = 0
+        nbsuccess = 0
+        window_info02.destroy()
 
 
 

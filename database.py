@@ -43,11 +43,19 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
     cursor.execute(query5, (data1[0], data2[0], duration, date_hour, nbok, nbtrials))
 
 # all data for show the result
-def read_result():
+def read_result(pseudo, exercise, startdate, enddate):
     open_dbconnection()
     cursor = db_connection.cursor()
-    query1 = "SELECT players.pseudonym, games_has_players.startdate, games_has_players.duration, games.exercise, games_has_players.nb_ok, games_has_players.nb_tot FROM games_has_players INNER JOIN players ON games_has_players.player_id = players.id INNER JOIN games ON games_has_players.game_id = games.id"
-    cursor.execute(query1,)
+    query1 = "SELECT players.pseudonym, games_has_players.startdate, games_has_players.duration, games.exercise, games_has_players.nb_ok, games_has_players.nb_tot FROM games_has_players INNER JOIN players ON games_has_players.player_id = players.id INNER JOIN games ON games_has_players.game_id = games.id WHERE 1=1"
+    if not pseudo == "":
+        query1 += f" AND players.pseudonym = '%{pseudo}%'"
+    if not exercise == "":
+        query1 += f" AND games.exercise LIKE '%{exercise}%'"
+    if not startdate == "":
+        query1 += f" AND games_has_players.startdate >= '{startdate}'"
+    if not enddate == "":
+        query1 += f" AND games_has_players.startdate <= '{enddate}'"
+    cursor.execute(query1)
     data = cursor.fetchall()
     return data
 

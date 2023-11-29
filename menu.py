@@ -27,6 +27,7 @@ def exercise(event,exer):
 
 #call display_results
 def display_result(event):
+    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate
     results_window = tk.Toplevel(window)
     results_window.title("Résultats")
     results_window.geometry("1000x500")
@@ -50,32 +51,42 @@ def display_result(event):
     label_title.pack()
 
     # Filtre
-    label_pseudo = Label(frame2, text="Pseudo:", font=("Arial", 12))
-    label_pseudo.grid(row=1, column=1, padx=25)
-    entry_pseudo = Entry(frame2, font=("Arial", 15), width=10)
+    label_pseudo = Label(frame2, text="Pseudo :", font=("Arial", 12))
+    label_pseudo.grid(row=1, column=1, padx=31)
+    entry_pseudo = Entry(frame2, font=("Arial", 12), width=10)
     entry_pseudo.grid(row=1, column=2)
-    label_exercise = Label(frame2, text="Exercice:", font=("Arial", 12))
-    label_exercise.grid(row=1, column=3, padx=25)
-    entry_exercise = Entry(frame2, font=("Arial", 15), width=10)
+    label_exercise = Label(frame2, text="Exercice :", font=("Arial", 12))
+    label_exercise.grid(row=1, column=3, padx=31)
+    entry_exercise = Entry(frame2, font=("Arial", 12), width=10)
     entry_exercise.grid(row=1, column=4)
-    label_startdate = Label(frame2, text="Date de début:", font=("Arial", 12))
-    label_startdate.grid(row=1, column=5, padx=25)
-    entry_startdate = Entry(frame2, font=("Arial", 15), width=10)
+    label_startdate = Label(frame2, text="Date de début :", font=("Arial", 12))
+    label_startdate.grid(row=1, column=5, padx=31)
+    entry_startdate = Entry(frame2, font=("Arial", 12), width=10)
     entry_startdate.grid(row=1, column=6)
-    label_enddate = Label(frame2, text="Date de fin:", font=("Arial", 12))
-    label_enddate.grid(row=1, column=7, padx=25)
-    entry_enddate = Entry(frame2, font=("Arial", 15), width=10)
+    label_enddate = Label(frame2, text="Date de fin :", font=("Arial", 12))
+    label_enddate.grid(row=1, column=7, padx=31)
+    entry_enddate = Entry(frame2, font=("Arial", 12), width=10)
     entry_enddate.grid(row=1, column=8)
 
+    # bouton
+    button = Button(frame2, text="Afficher les résultat", font=("Arial", 12), background="lightgrey", command=filters)
+    button.grid(row=2, column=1)
 
     # Nom de colonne
     headers = ["Élève", "Date et Heure", "Temps", "Exercice", "Nb OK", "Nb Total", "% Réussi"]
     for col, header in enumerate(headers):
         label = tk.Label(frame3, text=header, font=("Arial", 12, "bold"))
-        label.grid(row=0, column=col)
+        label.grid(row=0, column=col, padx=35)
 
+
+def filters():
+    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate
+    pseudo = entry_pseudo.get()
+    exercise = entry_exercise.get()
+    startdate = entry_startdate.get()
+    enddate = entry_enddate.get()
     # Données
-    data = database.read_result()
+    data = database.read_result(pseudo, exercise, startdate, enddate)
     for i, result in enumerate(data):
         percent = (result[4] / result[5]) * 100
         progress_value = int(percent)
@@ -86,13 +97,12 @@ def display_result(event):
         else:
             progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="green.Horizontal.TProgressbar")
 
-        progress_bar.grid(row=i + 1, column=len(headers) - 1)
+        progress_bar.grid(row=i + 1, column=6)
 
         # Affichage des données
         for col, value in enumerate(result):
             label = tk.Label(frame3, text=value, font=("Arial", 10))
-            label.grid(row=i+1, column=col)
-
+            label.grid(row=i+1, column=col, padx=30)
 # Main windows
 window = tk.Tk()
 window.title("Training, entrainement cérébral")
