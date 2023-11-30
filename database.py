@@ -7,6 +7,7 @@ Version : 1.0
 """
 
 import mysql.connector
+from tkinter import messagebox
 import datetime
 
 #fonction pour ouverture d'une session Mysql
@@ -48,15 +49,18 @@ def read_result(pseudo, exercise, startdate, enddate):
     cursor = db_connection.cursor()
     query1 = "SELECT players.pseudonym, games_has_players.startdate, games_has_players.duration, games.exercise, games_has_players.nb_ok, games_has_players.nb_tot FROM games_has_players INNER JOIN players ON games_has_players.player_id = players.id INNER JOIN games ON games_has_players.game_id = games.id WHERE 1=1"
     if not pseudo == "":
-        query1 += f" AND players.pseudonym = '%{pseudo}%'"
+        query1 += f" AND players.pseudonym = '{pseudo}%'"
     if not exercise == "":
-        query1 += f" AND games.exercise LIKE '%{exercise}%'"
+        query1 += f" AND games.exercise LIKE '{exercise}%'"
     if not startdate == "":
         query1 += f" AND games_has_players.startdate >= '{startdate}'"
     if not enddate == "":
         query1 += f" AND games_has_players.startdate <= '{enddate}'"
-    cursor.execute(query1)
-    data = cursor.fetchall()
+    try:
+        cursor.execute(query1)
+        data = cursor.fetchall()
+    except:
+        messagebox.showerror(title="Erreur", message="Il y a peut être une erreur dans date de début ou de fin veuillez essayez le format suivant : AAAA-MM-JJ (Attention la précédente fenêtre n'est pas fermé)")
     return data
 
 def close_dbconnection():

@@ -85,24 +85,36 @@ def filters():
     exercise = entry_exercise.get()
     startdate = entry_startdate.get()
     enddate = entry_enddate.get()
+    running = True
     # Données
-    data = database.read_result(pseudo, exercise, startdate, enddate)
-    for i, result in enumerate(data):
-        percent = (result[4] / result[5]) * 100
-        progress_value = int(percent)
-        if progress_value <= 33:
-            progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="red.Horizontal.TProgressbar")
-        elif 34 <= progress_value <= 66:
-            progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="yellow.Horizontal.TProgressbar")
-        else:
-            progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="green.Horizontal.TProgressbar")
+    try:
+        data = database.read_result(pseudo, exercise, startdate, enddate)
+    except:
+        running = False
+    if running:
+        for widget in frame3.winfo_children():
+            widget.destroy()
+        headers = ["Élève", "Date et Heure", "Temps", "Exercice", "Nb OK", "Nb Total", "% Réussi"]
+        for col, header in enumerate(headers):
+            label = tk.Label(frame3, text=header, font=("Arial", 12, "bold"))
+            label.grid(row=0, column=col, padx=35)
 
-        progress_bar.grid(row=i + 1, column=6)
+        for i, result in enumerate(data):
+            percent = (result[4] / result[5]) * 100
+            progress_value = int(percent)
+            if progress_value <= 33:
+                progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="red.Horizontal.TProgressbar")
+            elif 34 <= progress_value <= 66:
+                progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="yellow.Horizontal.TProgressbar")
+            else:
+                progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="green.Horizontal.TProgressbar")
+            progress_bar.grid(row=i + 1, column=6)
 
-        # Affichage des données
-        for col, value in enumerate(result):
-            label = tk.Label(frame3, text=value, font=("Arial", 10))
-            label.grid(row=i+1, column=col, padx=30)
+            # Affichage des données
+            for col, value in enumerate(result):
+                label = tk.Label(frame3, text=value, font=("Arial", 10))
+                label.grid(row=i+1, column=col, padx=30)
+
 # Main windows
 window = tk.Tk()
 window.title("Training, entrainement cérébral")
