@@ -7,6 +7,7 @@ import mysql.connector
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 import geo01
 import info02
 import info05
@@ -71,8 +72,10 @@ def display_result(event):
     entry_enddate.grid(row=1, column=8)
 
     # Button
-    button = Button(frame2, text="Afficher les résultat", font=("Arial", 12), background="lightgrey", command=filters)
-    button.grid(row=2, column=1)
+    button_show = Button(frame2, text="Afficher les résultat", font=("Arial", 12), background="lightgrey", command=filters)
+    button_show.grid(row=2, column=1)
+    button_create = Button(frame2, text="Créer un résultat", font=("Arial", 12), background="lightgrey", command=create)
+    button_create.grid(row=2, column=2)
 
     # Name of column
     headers = ["Élève", "Date et Heure", "Temps", "Exercice", "Nb OK", "Nb Total", "% Réussi"]
@@ -119,6 +122,72 @@ def filters():
             for col, value in enumerate(result):
                 label = tk.Label(frame3, text=value, font=("Arial", 10))
                 label.grid(row=i + 1, column=col, padx=30)
+                button_delete = Button(frame3, text="delete", font=("Arial", 12), background="lightgrey")
+                button_delete.grid(row=i + 1, column= 7)
+                button_update = Button(frame3, text="update", font=("Arial", 12), background="lightgrey")
+                button_update.grid(row=i + 1, column= 8)
+
+
+def create():
+    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot
+
+    create_window = tk.Toplevel(window)
+    create_window.title("Création d'un utilisateurs")
+    create_window.geometry("800x150")
+    rgb_color_result = (139, 201, 194)
+    hex_color_result = '#%02x%02x%02x' % rgb_color_result
+    create_window.configure(bg=hex_color_result)
+
+    frame1 = Frame(create_window, background="white")
+    frame1.pack(side=TOP, pady=10)
+    frame2 = Frame(create_window, background="white", width=900)
+    frame2.pack(side=TOP, pady=10)
+
+    # Columns
+    label_Student = Label(frame1, text="Eleve :", font=("Arial", 12))
+    label_Student.grid(row=1, column=1, padx=31)
+    entry_Student = Entry(frame1, font=("Arial", 12), width=10)
+    entry_Student.grid(row=2, column=1)
+    label_Date = Label(frame1, text="Date et Heure :", font=("Arial", 12))
+    label_Date.grid(row=1, column=2, padx=31)
+    entry_Date = Entry(frame1, font=("Arial", 12), width=10)
+    entry_Date.grid(row=2, column=2)
+    label_Time = Label(frame1, text="Temps :", font=("Arial", 12))
+    label_Time.grid(row=1, column=3, padx=31)
+    entry_Time = Entry(frame1, font=("Arial", 12), width=10)
+    entry_Time.grid(row=2, column=3)
+    label_Exercise = Label(frame1, text="Exercice :", font=("Arial", 12))
+    label_Exercise.grid(row=1, column=4, padx=31)
+    entry_Exercise = Entry(frame1, font=("Arial", 12), width=10)
+    entry_Exercise.grid(row=2, column=4)
+    label_Nbok = Label(frame1, text="Nb OK :", font=("Arial", 12))
+    label_Nbok.grid(row=1, column=5, padx=31)
+    entry_Nbok = Entry(frame1, font=("Arial", 12), width=10)
+    entry_Nbok.grid(row=2, column=5)
+    label_Nbtot = Label(frame1, text="Nb Total :", font=("Arial", 12))
+    label_Nbtot.grid(row=1, column=6, padx=31)
+    entry_Nbtot = Entry(frame1, font=("Arial", 12), width=10)
+    entry_Nbtot.grid(row=2, column=6)
+
+    # Button
+    button = Button(frame2, text="Terminer", font=("Arial", 12), background="lightgrey", command=get_create)
+    button.grid(row=1, column=2)
+
+
+def get_create():
+    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot
+
+    student = entry_Student.get()
+    date = entry_Date.get()
+    time = entry_Time.get()
+    exercise = entry_Exercise.get()
+    nbok = entry_Nbok.get()
+    nbtot = entry_Nbtot.get()
+
+    if student == "" or date == "" or time == "" or exercise == "" or nbok == "" or nbtot == "":
+        messagebox.showerror(title="Erreur", message="Merci de bien remplire tout les champs pour pouvoir insérer de nouveau résultat (Attention la précédente fenêtre n'est pas fermé)")
+    else:
+        database.create_result(student, date, time, exercise, nbok, nbtot)
 
 
 # Main windows

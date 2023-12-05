@@ -65,10 +65,63 @@ def read_result(pseudo, exercise, startdate, enddate):
         cursor.execute(query1)
         data = cursor.fetchall()
     except:
-        messagebox.showerror(title="Erreur",
-                             message="Il y a peut être une erreur dans date de début ou de fin veuillez essayez le format suivant : AAAA-MM-JJ (Attention la précédente fenêtre n'est pas fermé)")
+        messagebox.showerror(title="Erreur", message="Il y a peut être une erreur dans date de début ou de fin veuillez essayez le format suivant : AAAA-MM-JJ (Attention la précédente fenêtre n'est pas fermé)")
     return data
 
+
+def create_result(student, date, time, exercise, nbok, nbtot):
+    open_dbconnection()
+    cursor = db_connection.cursor()
+    query3 = "SELECT id FROM games WHERE exercise = %s"
+    cursor.execute(query3, (exercise,))
+    data1 = cursor.fetchone()
+    query4 = "SELECT id FROM players WHERE pseudonym = %s"
+    cursor.execute(query4, (student,))
+    data2 = cursor.fetchone()
+    if data1 is None:
+        messagebox.showerror(title="Erreur", message="Le champs Exercice ne peux contenir que GEO01, INFO02 ou INFO0 (Attention la précédente fenêtre n'est pas fermé)")
+    else:
+        if data2 is None:
+            query2 = "INSERT INTO players (pseudonym) values (%s)"
+            cursor.execute(query2, (student,))
+            query4 = "SELECT id FROM players WHERE pseudonym = %s"
+            cursor.execute(query4, (student,))
+            data2 = cursor.fetchone()
+
+        format_date = "%Y-%m-%d %H:%M:%S"
+        format_time = "%H:%M:%s"
+        date_test = False
+        time_test = False
+        nbok_test = False
+        nbtot_test = False
+
+        try:
+            date_checked = datetime.strptime(date, format_date)
+            date_test = True
+        except:
+            messagebox.showerror(title="Erreur", message="Le format du champs Date et Heure ne correspond pas a la base de donnée merci d'utiliser : AAAA-MM-JJ hh:mm:ss (Attention la précédente fenêtre n'est pas fermé)")
+
+        try:
+            time_checked = datetime.strptime(time, format_time)
+            time_test = True
+        except:
+            messagebox.showerror(title="Erreur", message="Le format du champs Temps ne correspond pas a la base de donnée merci d'utiliser : hh:mm:ss (Attention la précédente fenêtre n'est pas fermé)")
+
+        try:
+            nbok_checked = int(nbok)
+            nbok_test = True
+        except:
+            messagebox.showerror(title="Erreur", message="Le format du champs Nb OK ne correspond pas a la base de donnée merci de donner un chiffre (Attention la précédente fenêtre n'est pas fermé)")
+
+        try:
+            nbtot_checked = int(nbtot)
+            nbtot_test = True
+        except:
+            messagebox.showerror(title="Erreur", message="Le format du champs Nb Totale ne correspond pas a la base de donnée merci de donner un chiffre (Attention la précédente fenêtre n'est pas fermé)")
+
+        if date_test and time_test and nbok_test and nbtot_test:
+            query1 = "INSERT INTO games_has_player (game_id, player_id, duration, startdate, nb_ok, nb_tot) values (%s, %s, %s, %s, %s, %s)"
+            cursor.execute(query1, (data2, data1, time_checked, date_checked, nbok_checked, nbtot_checked))
 
 def close_dbconnection():
     db_connection.close()
