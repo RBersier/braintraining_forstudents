@@ -95,6 +95,7 @@ def display_timer():
     lbl_duration.configure(text="{:02d}".format(int(duration_s /60)) + ":" + "{:02d}".format(duration_s %60))
     window_geo01.after(1000, display_timer) #recommencer après 15 ms
 
+
 def finish():
     global exercise, nbtrials, nbsuccess, pseudo, entry_pseudo
 

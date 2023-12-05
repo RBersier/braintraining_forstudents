@@ -3,6 +3,7 @@
 # PRO DB PY
 
 import tkinter as tk
+from tkinter import messagebox
 import random
 from math import pow
 import time

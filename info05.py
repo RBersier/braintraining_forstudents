@@ -3,7 +3,7 @@
 # PRO DB PY
 import math
 import tkinter as tk
-from tkinter.messagebox import showinfo          # Les alertes
+from tkinter import messagebox
 import random
 from math import cos, sin, pi
 from colorsys import hsv_to_rgb, rgb_to_hsv
@@ -11,7 +11,6 @@ from math import sqrt
 import time
 import database
 import datetime
-from tkinter.messagebox import *
 
 # Main window
 # graphical variables
