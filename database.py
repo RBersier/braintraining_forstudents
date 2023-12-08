@@ -9,7 +9,7 @@ Version : 1.0
 import mysql.connector
 from tkinter import messagebox
 import datetime
-
+from datetime import datetime
 
 # Function for Open session in Mysql
 def open_dbconnection():
@@ -89,7 +89,7 @@ def create_result(student, date, time, exercise, nbok, nbtot):
             data2 = cursor.fetchone()
 
         format_date = "%Y-%m-%d %H:%M:%S"
-        format_time = "%H:%M:%s"
+        format_time = "%H:%M:%S"
         date_test = False
         time_test = False
         nbok_test = False
@@ -120,8 +120,8 @@ def create_result(student, date, time, exercise, nbok, nbtot):
             messagebox.showerror(title="Erreur", message="Le format du champs Nb Totale ne correspond pas a la base de donnée merci de donner un chiffre (Attention la précédente fenêtre n'est pas fermé)")
 
         if date_test and time_test and nbok_test and nbtot_test:
-            query1 = "INSERT INTO games_has_player (game_id, player_id, duration, startdate, nb_ok, nb_tot) values (%s, %s, %s, %s, %s, %s)"
-            cursor.execute(query1, (data2, data1, time_checked, date_checked, nbok_checked, nbtot_checked))
+            query1 = "INSERT INTO games_has_players (game_id, player_id, duration, startdate, nb_ok, nb_tot) values (%s, %s, %s, %s, %s, %s)"
+            cursor.execute(query1, (data1[0], data2[0], time_checked, date_checked, nbok_checked, nbtot_checked))
 
 def close_dbconnection():
     db_connection.close()
