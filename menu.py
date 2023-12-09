@@ -119,9 +119,9 @@ def filters():
             for col, value in enumerate(result):
                 label = tk.Label(frame3, text=value, font=("Arial", 10))
                 label.grid(row=i + 1, column=col, padx=30)
-                button_delete = Button(frame3, text="delete", font=("Arial", 12), background="lightgrey", command=lambda: delete(i + 1, 0, 1))
+                button_delete = Button(frame3, text="delete", font=("Arial", 12), background="lightgrey", command=lambda row=i + 1: delete(row, 0, 1))
                 button_delete.grid(row=i + 1, column= 7)
-                button_update = Button(frame3, text="update", font=("Arial", 12), background="lightgrey", command=lambda: update(i + 1, 0, 1))
+                button_update = Button(frame3, text="update", font=("Arial", 12), background="lightgrey", command=lambda row=i + 1: update(row, 0, 1))
                 button_update.grid(row=i + 1, column= 8)
 
 
@@ -205,6 +205,64 @@ def delete(row, col_name, col_date):
             date_obj = date_widget.cget('text')
         database.delete_result(name_obj, date_obj)
         messagebox.showinfo(title="Info", message="les données ont été suprimées n'oubliez pas d'actualiser")
+
+
+def update(row, col_name, col_date):
+    global entry_Time, entry_Nbok, entry_Nbtot, update_window
+
+    update_window = tk.Toplevel(window)
+    update_window.title("Modification de données")
+    update_window.geometry("700x200")
+    rgb_color_result = (139, 201, 194)
+    hex_color_result = '#%02x%02x%02x' % rgb_color_result
+    update_window.configure(bg=hex_color_result)
+
+    frame1 = Frame(update_window, background="white")
+    frame1.pack(side=TOP, pady=10)
+    frame2 = Frame(update_window, background="white", width=900)
+    frame2.pack(side=TOP, pady=10)
+
+    # Columns
+    label_Time = Label(frame1, text="Temps :", font=("Arial", 12))
+    label_Time.grid(row=1, column=1)
+    entry_Time = Entry(frame1, font=("Arial", 12), width=20)
+    entry_Time.grid(row=2, column=1, padx=10)
+    label_Nbok = Label(frame1, text="Nb OK :", font=("Arial", 12))
+    label_Nbok.grid(row=1, column=2)
+    entry_Nbok = Entry(frame1, font=("Arial", 12), width=20)
+    entry_Nbok.grid(row=2, column=2, padx=10)
+    label_Nbtot = Label(frame1, text="Nb Total :", font=("Arial", 12))
+    label_Nbtot.grid(row=1, column=3)
+    entry_Nbtot = Entry(frame1, font=("Arial", 12), width=20)
+    entry_Nbtot.grid(row=2, column=3, padx=10)
+
+    button = Button(frame2, text="Terminer", font=("Arial", 12), background="lightgrey", command=lambda: get_update(row, col_name, col_date))
+    button.grid(row=1, column=2)
+
+
+def get_update(row, col_name, col_date):
+    global entry_Time, entry_Nbok, entry_Nbtot, update_window
+
+    time = entry_Time.get()
+    nbok = entry_Nbok.get()
+    nbtot = entry_Nbtot.get()
+
+    name = frame3.grid_slaves(row=row, column=col_name)
+    date = frame3.grid_slaves(row=row, column=col_date)
+
+    if name and date:
+        name_widget = name[0]
+        date_widget = date[0]
+    if isinstance(name_widget and date_widget, tk.Label):
+        name_obj = name_widget.cget('text')
+        date_obj = date_widget.cget('text')
+
+    if time == "" and nbok == "" and nbtot == "":
+        messagebox.showerror(title="Erreur", message="Aucun champ n'est rempli ou un ou plusieurs champs ne correspondent pas (nb ok et nb totale doivent être des entiers, et le format de temps doit être hh:mm:ss) (Attention, la précédente fenêtre n'est pas fermée)")
+    else:
+        database.update_result(time, nbok, nbtot, name_obj, date_obj)
+        update_window.destroy()
+        messagebox.showinfo(title="Succès", message="les données ont belle est bien été modifié a la base de donnée (la fenêtre s'est fermé")
 
 
 # Main windows

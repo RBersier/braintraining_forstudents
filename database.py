@@ -132,5 +132,50 @@ def delete_result(name, date):
     query2 = "DELETE FROM games_has_players WHERE player_id = %s AND startdate = %s"
     cursor.execute(query2, (data[0], date))
 
+
+def update_result(time, nbok, nbtot, name, date):
+    open_dbconnection()
+    cursor = db_connection.cursor()
+    query1 = "SELECT id FROM players WHERE pseudonym = %s"
+    cursor.execute(query1, (name,))
+    data = cursor.fetchone()
+
+    format_time = "%H:%M:%S"
+
+    try:
+        time_checked = datetime.strptime(time, format_time)
+        time_test = True
+    except:
+        time_test = False
+
+    try:
+        nbok_checked = int(nbok)
+        nbok_test = True
+    except:
+        nbok_test = False
+
+    try:
+        nbtot_checked = int(nbtot)
+        nbtot_test = True
+    except:
+        nbtot_test = False
+
+
+    update_params = {}
+
+    if time_test:
+        update_params["duration"] = time_checked
+
+    if nbok_test:
+        update_params["nb_ok"] = nbok_checked
+
+    if nbtot_test:
+        update_params["nb_tot"] = nbtot_checked
+
+    if update_params:
+        set_clause = ", ".join([f"{key} = %s" for key in update_params.keys()])
+        query2 = f"UPDATE games_has_players SET {set_clause} WHERE player_id = %s and startdate = %s"
+        cursor.execute(query2, (*update_params.values(), data[0], date))
+
 def close_dbconnection():
     db_connection.close()
