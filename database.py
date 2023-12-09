@@ -123,5 +123,14 @@ def create_result(student, date, time, exercise, nbok, nbtot):
             query1 = "INSERT INTO games_has_players (game_id, player_id, duration, startdate, nb_ok, nb_tot) values (%s, %s, %s, %s, %s, %s)"
             cursor.execute(query1, (data1[0], data2[0], time_checked, date_checked, nbok_checked, nbtot_checked))
 
+def delete_result(name, date):
+    open_dbconnection()
+    cursor = db_connection.cursor()
+    query1 = "SELECT id FROM players WHERE pseudonym = %s"
+    cursor.execute(query1, (name,))
+    data = cursor.fetchone()
+    query2 = "DELETE FROM games_has_players WHERE player_id = %s AND startdate = %s"
+    cursor.execute(query2, (data[0], date))
+
 def close_dbconnection():
     db_connection.close()

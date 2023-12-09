@@ -33,7 +33,7 @@ def display_result(event):
     global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate
     results_window = tk.Toplevel(window)
     results_window.title("Résultats")
-    results_window.geometry("1000x500")
+    results_window.geometry("1200x500")
     rgb_color_result = (139, 201, 194)
     hex_color_result = '#%02x%02x%02x' % rgb_color_result
     results_window.configure(bg=hex_color_result)
@@ -108,28 +108,25 @@ def filters():
             percent = (result[4] / result[5]) * 100
             progress_value = int(percent)
             if progress_value <= 33:
-                progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate",
-                                               value=progress_value, style="red.Horizontal.TProgressbar")
+                progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="red.Horizontal.TProgressbar")
             elif 34 <= progress_value <= 66:
-                progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate",
-                                               value=progress_value, style="yellow.Horizontal.TProgressbar")
+                progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="yellow.Horizontal.TProgressbar")
             else:
-                progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate",
-                                               value=progress_value, style="green.Horizontal.TProgressbar")
+                progress_bar = ttk.Progressbar(frame3, orient="horizontal", length=100, mode="determinate", value=progress_value, style="green.Horizontal.TProgressbar")
             progress_bar.grid(row=i + 1, column=6)
 
             # Show data
             for col, value in enumerate(result):
                 label = tk.Label(frame3, text=value, font=("Arial", 10))
                 label.grid(row=i + 1, column=col, padx=30)
-                button_delete = Button(frame3, text="delete", font=("Arial", 12), background="lightgrey")
+                button_delete = Button(frame3, text="delete", font=("Arial", 12), background="lightgrey", command=lambda: delete(i + 1, 0, 1))
                 button_delete.grid(row=i + 1, column= 7)
-                button_update = Button(frame3, text="update", font=("Arial", 12), background="lightgrey")
+                button_update = Button(frame3, text="update", font=("Arial", 12), background="lightgrey", command=lambda: update(i + 1, 0, 1))
                 button_update.grid(row=i + 1, column= 8)
 
 
 def create():
-    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot
+    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot, create_window
 
     create_window = tk.Toplevel(window)
     create_window.title("Création d'un utilisateurs")
@@ -176,7 +173,7 @@ def create():
 
 
 def get_create():
-    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot
+    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot, create_window
 
     student = entry_Student.get()
     date = entry_Date.get()
@@ -189,6 +186,25 @@ def get_create():
         messagebox.showerror(title="Erreur", message="Merci de bien remplire tout les champs pour pouvoir insérer de nouveau résultat (Attention la précédente fenêtre n'est pas fermé)")
     else:
         database.create_result(student, date, time, exercise, nbok, nbtot)
+        create_window.destroy()
+        messagebox.showinfo(title="Succès", message="vos données ont belle est bien été ajouté a la base de donnée (la fenêtre s'est fermé")
+
+
+def delete(row, col_name, col_date):
+    result = messagebox.askquestion("Question", "Êtes-vous sûr de vouloir supprimer cette ligne ?")
+    if result == 'no':
+        messagebox.showinfo(title="Info", message="les données reste intacte")
+    else:
+        name = frame3.grid_slaves(row=row, column=col_name)
+        date = frame3.grid_slaves(row=row, column=col_date)
+        if name and date:
+            name_widget = name[0]
+            date_widget = date[0]
+        if isinstance(name_widget and date_widget, tk.Label):
+            name_obj = name_widget.cget('text')
+            date_obj = date_widget.cget('text')
+        database.delete_result(name_obj, date_obj)
+        messagebox.showinfo(title="Info", message="les données ont été suprimées n'oubliez pas d'actualiser")
 
 
 # Main windows
