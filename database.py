@@ -11,11 +11,13 @@ from tkinter import messagebox
 import datetime
 from datetime import datetime
 
+
 # Function for opening a session in MySQL
 def open_dbconnection():
     global db_connection
     db_connection = mysql.connector.connect(host='127.0.0.1', port='3306', user='root', password='root',
-                                            database='Braintraining', buffered=True, autocommit=True)
+                                            database='Braintrainning', buffered=True, autocommit=True)
+
 
 # Save result in the database
 def save_results(exercise, pseudo, duration, nbtrials, nbok):
@@ -54,6 +56,7 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
     query5 = "INSERT INTO games_has_players (game_id, player_id, duration, startdate, nb_ok, nb_tot) values (%s, %s, %s, %s, %s, %s)"
     cursor.execute(query5, (data1[0], data2[0], duration, date_hour, nbok, nbtrials))
 
+
 # All data to show the results
 def read_result(pseudo, exercise, startdate, enddate):
     open_dbconnection()
@@ -80,6 +83,7 @@ def read_result(pseudo, exercise, startdate, enddate):
         # Handle errors related to date format
         messagebox.showerror(title="Error", message="There may be an error in the start or end date format. Please try the following format: YYYY-MM-DD (Note: the previous window is not closed)")
     return data
+
 
 # Create a new result
 def create_result(student, date, time, exercise, nbok, nbtot):
@@ -148,6 +152,7 @@ def create_result(student, date, time, exercise, nbok, nbtot):
             query1 = "INSERT INTO games_has_players (game_id, player_id, duration, startdate, nb_ok, nb_tot) values (%s, %s, %s, %s, %s, %s)"
             cursor.execute(query1, (data1[0], data2[0], time_checked, date_checked, nbok_checked, nbtot_checked))
 
+
 # Delete a result
 def delete_result(name, date):
     open_dbconnection()
@@ -161,6 +166,7 @@ def delete_result(name, date):
     # Delete the result based on player ID and start date
     query2 = "DELETE FROM games_has_players WHERE player_id = %s AND startdate = %s"
     cursor.execute(query2, (data[0], date))
+
 
 # Update a result
 def update_result(time, nbok, nbtot, name, date):
@@ -217,6 +223,7 @@ def update_result(time, nbok, nbtot, name, date):
         set_clause = ", ".join([f"{key} = %s" for key in update_params.keys()])
         query2 = f"UPDATE games_has_players SET {set_clause} WHERE player_id = %s and startdate = %s"
         cursor.execute(query2, (*update_params.values(), data[0], date))
+
 
 # Close the database connection
 def close_dbconnection():
