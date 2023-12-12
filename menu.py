@@ -254,9 +254,9 @@ def update(row, col_name, col_date):
     update_window = tk.Toplevel(window)
     update_window.title("Modification de données")
     update_window.geometry("700x200")
-    rgb_color_result = (139, 201, 194)
-    hex_color_result = '#%02x%02x%02x' % rgb_color_result
-    update_window.configure(bg=hex_color_result)
+    rgb_color_update = (139, 201, 194)
+    hex_color_update = '#%02x%02x%02x' % rgb_color_update
+    update_window.configure(bg=hex_color_update)
 
     frame1 = Frame(update_window, background="white")
     frame1.pack(side=TOP, pady=10)
