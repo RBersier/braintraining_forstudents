@@ -177,5 +177,6 @@ def update_result(time, nbok, nbtot, name, date):
         query2 = f"UPDATE games_has_players SET {set_clause} WHERE player_id = %s and startdate = %s"
         cursor.execute(query2, (*update_params.values(), data[0], date))
 
+
 def close_dbconnection():
     db_connection.close()

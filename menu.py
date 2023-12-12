@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from tkcalendar import DateEntry
 import geo01
 import info02
 import info05
@@ -60,15 +61,23 @@ def display_result(event):
     entry_pseudo.grid(row=1, column=2)
     label_exercise = Label(frame2, text="Exercice :", font=("Arial", 12))
     label_exercise.grid(row=1, column=3, padx=31)
-    entry_exercise = Entry(frame2, font=("Arial", 12), width=10)
+
+    exercise_value = tk.StringVar(frame2)
+    entry_exercise = ttk.Combobox(frame2, textvariable=exercise_value, font=("Arial", 10), width=10, background="white")
     entry_exercise.grid(row=1, column=4)
+    entry_exercise['values'] = ('', 'GEO01', 'INFO02', 'INFO05')
+    entry_exercise['state'] = 'readonly'
+
+    text = tk.StringVar()
+    text.set("")
+
     label_startdate = Label(frame2, text="Date de début :", font=("Arial", 12))
     label_startdate.grid(row=1, column=5, padx=31)
-    entry_startdate = Entry(frame2, font=("Arial", 12), width=10)
+    entry_startdate = DateEntry(frame2, font=("Arial", 12), width=10, date_pattern='yyyy-mm-dd', textvariable = text)
     entry_startdate.grid(row=1, column=6)
     label_enddate = Label(frame2, text="Date de fin :", font=("Arial", 12))
     label_enddate.grid(row=1, column=7, padx=31)
-    entry_enddate = Entry(frame2, font=("Arial", 12), width=10)
+    entry_enddate = DateEntry(frame2, font=("Arial", 12), width=10, date_pattern='yyyy-mm-dd', textvariable = text)
     entry_enddate.grid(row=1, column=8)
 
     # Button
