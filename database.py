@@ -58,7 +58,7 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
 
 
 # All data to show the results
-def read_result(pseudo, exercise, startdate, enddate):
+def read_result(pseudo, exercise, startdate, enddate, result_windows):
     open_dbconnection()
     cursor = db_connection.cursor()
 
@@ -89,12 +89,12 @@ def read_result(pseudo, exercise, startdate, enddate):
                 actualN += 1
     except:
         # Handle errors related to date format
-        messagebox.showerror(title="Erreur", message="Il peut y avoir une erreur dans le format de la date de début ou de fin. Veuillez essayer le format suivant : AAAA-MM-JJ (Remarque : la fenêtre précédente n'est pas fermée)")
+        messagebox.showerror(parrent=result_windows, title="Erreur", message="Il peut y avoir une erreur dans le format de la date de début ou de fin. Veuillez essayer le format suivant : AAAA-MM-JJ")
     return query_data
 
 
 # Create a new result
-def create_result(student, date, time, exercise, nbok, nbtot):
+def create_result(student, date, time, exercise, nbok, nbtot, create_window):
     open_dbconnection()
     cursor = db_connection.cursor()
 
@@ -110,7 +110,7 @@ def create_result(student, date, time, exercise, nbok, nbtot):
 
     # If the game doesn't exist, show an error message
     if data1 is None:
-        messagebox.showerror(title="Erreur", message="Le champ Exercice ne peut contenir que GEO01, INFO02 ou INFO0 (Remarque : la fenêtre précédente n'est pas fermée)")
+        messagebox.showerror(parrent=create_window, title="Erreur", message="Le champ Exercice ne peut contenir que GEO01, INFO02 ou INFO05")
     else:
         # If the player doesn't exist, insert it
         if data2 is None:
@@ -132,28 +132,28 @@ def create_result(student, date, time, exercise, nbok, nbtot):
             date_checked = datetime.strptime(date, format_date)
             date_test = True
         except:
-            messagebox.showerror(title="Erreur", message="Le format du champ Date et Heure ne correspond pas à la base de données. Veuillez utiliser : AAAA-MM-JJ hh:mm:ss (Remarque : la fenêtre précédente n'est pas fermée)")
+            messagebox.showerror(parrent=create_window, title="Erreur", message="Le format du champ Date et Heure ne correspond pas à la base de données. Veuillez utiliser : AAAA-MM-JJ hh:mm:ss")
 
         try:
             # Check if the time is in the correct format
             time_checked = datetime.strptime(time, format_time)
             time_test = True
         except:
-            messagebox.showerror(title="Erreur", message="Le format du champ Heure ne correspond pas à la base de données. Veuillez utiliser : hh:mm:ss (Remarque : la fenêtre précédente n'est pas fermée)")
+            messagebox.showerror(parrent=create_window, title="Erreur", message="Le format du champ Heure ne correspond pas à la base de données. Veuillez utiliser : hh:mm:ss")
 
         try:
             # Check if nbok is an integer
             nbok_checked = int(nbok)
             nbok_test = True
         except:
-            messagebox.showerror(title="Erreur", message="Le format du champ Nb OK ne correspond pas à la base de données. Veuillez entrer un nombre (Remarque : la fenêtre précédente n'est pas fermée)")
+            messagebox.showerror(parrent=create_window, title="Erreur", message="Le format du champ Nb OK ne correspond pas à la base de données. Veuillez entrer un nombre (Remarque : la fenêtre précédente n'est pas fermée)")
 
         try:
             # Check if nbtot is an integer
             nbtot_checked = int(nbtot)
             nbtot_test = True
         except:
-            messagebox.showerror(title="Erreur", message="Le format du champ Nb Total ne correspond pas à la base de données. Veuillez entrer un nombre (Remarque : la fenêtre précédente n'est pas fermée)")
+            messagebox.showerror(parrent=create_window, title="Erreur", message="Le format du champ Nb Total ne correspond pas à la base de données. Veuillez entrer un nombre")
 
         # If all checks pass, insert the result
         if date_test and time_test and nbok_test and nbtot_test:

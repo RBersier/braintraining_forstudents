@@ -31,7 +31,7 @@ def exercise(event, exer):
 
 # Function to display results
 def display_result(event):
-    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page
+    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page, results_window
     results_window = tk.Toplevel(window)
     results_window.title("Résultats")
     results_window.geometry("1200x600")
@@ -110,7 +110,7 @@ def display_result(event):
 
 # Function to filter the result
 def filters():
-    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page, data
+    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page, data, results_window
     pseudo = entry_pseudo.get()
     exercise = entry_exercise.get()
     startdate = entry_startdate.get()
@@ -119,7 +119,7 @@ def filters():
 
     # Retrieve data from the database
     try:
-        data = database.read_result(pseudo, exercise, startdate, enddate)[page]
+        data = database.read_result(pseudo, exercise, startdate, enddate, results_window)[page]
     except:
         running = False
 
@@ -225,20 +225,20 @@ def get_create():
 
     # Check if any field is empty
     if student == "" or date == "" or time == "" or exercise == "" or nbok == "" or nbtot == "":
-        messagebox.showerror(title="Erreur", message="Merci de bien remplir tous les champs pour pouvoir insérer un nouveau résultat (Attention la précédente fenêtre n'est pas fermée)")
+        messagebox.showerror(parent=create_window, title="Erreur", message="Merci de bien remplir tous les champs pour pouvoir insérer un nouveau résultat")
     else:
         # Insert data into the database
-        database.create_result(student, date, time, exercise, nbok, nbtot)
+        database.create_result(student, date, time, exercise, nbok, nbtot, create_window)
         create_window.destroy()
-        messagebox.showinfo(title="Succès", message="Vos données ont bien été ajoutées à la base de données (la fenêtre s'est fermée)")
+        messagebox.showinfo(parent=create_window, title="Succès", message="Vos données ont bien été ajoutées à la base de données (la fenêtre s'est fermée)")
 
 
 # Function for delete data
 def delete(row, col_name, col_date):
     # Ask for confirmation before deleting
-    result = messagebox.askquestion("Question", "Êtes-vous sûr de vouloir supprimer cette ligne ?")
+    result = messagebox.askquestion(parent=results_window, title="Question", message="Êtes-vous sûr de vouloir supprimer cette ligne ?")
     if result == 'no':
-        messagebox.showinfo(title="Info", message="Les données restent intactes")
+        messagebox.showinfo(parent=results_window, title="Info", message="Les données restent intactes")
     else:
         # Get name and date from the selected row
         name = frame3.grid_slaves(row=row, column=col_name)
@@ -251,7 +251,7 @@ def delete(row, col_name, col_date):
             date_obj = date_widget.cget('text')
         # Delete data from the database
         database.delete_result(name_obj, date_obj)
-        messagebox.showinfo(title="Info", message="Les données ont été supprimées. N'oubliez pas d'actualiser.")
+        messagebox.showinfo(parent=results_window, title="Info", message="Les données ont été supprimées. N'oubliez pas d'actualiser.")
 
 
 # Function for update data
@@ -289,26 +289,6 @@ def update(row, col_name, col_date):
     button.grid(row=1, column=2)
 
 
-def nextpage():
-    global page, data
-
-    if page <= (len(data) - 3):
-        page += 1
-        filters()
-    else:
-        messagebox.showinfo(title="Info", message="Vous êtes arrivé à la page maximum il n y a pas de donnée après")
-
-
-def previouspage():
-    global page
-
-    if page > 0:
-        page -= 1
-        filters()
-    else:
-        messagebox.showinfo(title="Info", message="Vous êtes arrivé à la page minimum il n y a pas de donnée avant")
-
-
 # Function to take the data for update row
 def get_update(row, col_name, col_date):
     global entry_Time, entry_Nbok, entry_Nbtot, update_window
@@ -331,12 +311,32 @@ def get_update(row, col_name, col_date):
 
     # Check if any field is empty
     if time == "" and nbok == "" and nbtot == "":
-        messagebox.showerror(title="Erreur", message="Aucun champ n'est rempli ou un ou plusieurs champs ne correspondent pas (nb ok et nb total doivent être des entiers, et le format de temps doit être hh:mm:ss) (Attention, la précédente fenêtre n'est pas fermée)")
+        messagebox.showerror(parent=update_window, title="Erreur", message="Aucun champ n'est rempli ou un ou plusieurs champs ne correspondent pas (nb ok et nb total doivent être des entiers, et le format de temps doit être hh:mm:ss)")
     else:
         # Update data in the database
         database.update_result(time, nbok, nbtot, name_obj, date_obj)
         update_window.destroy()
-        messagebox.showinfo(title="Succès", message="Les données ont bien été modifiées dans la base de données (la fenêtre s'est fermée)")
+        messagebox.showinfo(parent=update_window, title="Succès", message="Les données ont bien été modifiées dans la base de données (la fenêtre s'est fermée)")
+
+
+def nextpage():
+    global page, data
+
+    if page <= (len(data) - 3):
+        page += 1
+        filters()
+    else:
+        messagebox.showinfo(parent=results_window, title="Info", message="Vous êtes arrivé à la page maximum il n y a pas de donnée après")
+
+
+def previouspage():
+    global page
+
+    if page > 0:
+        page -= 1
+        filters()
+    else:
+        messagebox.showinfo(parent=results_window, title="Info", message="Vous êtes arrivé à la page minimum il n y a pas de donnée avant")
 
 
 # Main part of your code
