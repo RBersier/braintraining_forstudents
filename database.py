@@ -79,10 +79,18 @@ def read_result(pseudo, exercise, startdate, enddate):
         # Execute the query
         cursor.execute(query1)
         data = cursor.fetchall()
+        query_data = []
+        query_data.append([])
+        actualN = 1
+        for user in range(len(data)):
+            query_data[actualN - 1].append(data[user])
+            if user == (actualN * 9):
+                query_data.append([])
+                actualN += 1
     except:
         # Handle errors related to date format
-        messagebox.showerror(title="Error", message="There may be an error in the start or end date format. Please try the following format: YYYY-MM-DD (Note: the previous window is not closed)")
-    return data
+        messagebox.showerror(title="Erreur", message="Il peut y avoir une erreur dans le format de la date de début ou de fin. Veuillez essayer le format suivant : AAAA-MM-JJ (Remarque : la fenêtre précédente n'est pas fermée)")
+    return query_data
 
 
 # Create a new result
@@ -102,7 +110,7 @@ def create_result(student, date, time, exercise, nbok, nbtot):
 
     # If the game doesn't exist, show an error message
     if data1 is None:
-        messagebox.showerror(title="Error", message="The Exercise field can only contain GEO01, INFO02, or INFO0 (Note: the previous window is not closed)")
+        messagebox.showerror(title="Erreur", message="Le champ Exercice ne peut contenir que GEO01, INFO02 ou INFO0 (Remarque : la fenêtre précédente n'est pas fermée)")
     else:
         # If the player doesn't exist, insert it
         if data2 is None:
@@ -124,28 +132,28 @@ def create_result(student, date, time, exercise, nbok, nbtot):
             date_checked = datetime.strptime(date, format_date)
             date_test = True
         except:
-            messagebox.showerror(title="Error", message="The format of the Date and Time field does not match the database. Please use: YYYY-MM-DD hh:mm:ss (Note: the previous window is not closed)")
+            messagebox.showerror(title="Erreur", message="Le format du champ Date et Heure ne correspond pas à la base de données. Veuillez utiliser : AAAA-MM-JJ hh:mm:ss (Remarque : la fenêtre précédente n'est pas fermée)")
 
         try:
             # Check if the time is in the correct format
             time_checked = datetime.strptime(time, format_time)
             time_test = True
         except:
-            messagebox.showerror(title="Error", message="The format of the Time field does not match the database. Please use: hh:mm:ss (Note: the previous window is not closed)")
+            messagebox.showerror(title="Erreur", message="Le format du champ Heure ne correspond pas à la base de données. Veuillez utiliser : hh:mm:ss (Remarque : la fenêtre précédente n'est pas fermée)")
 
         try:
             # Check if nbok is an integer
             nbok_checked = int(nbok)
             nbok_test = True
         except:
-            messagebox.showerror(title="Error", message="The format of the Nb OK field does not match the database. Please enter a number (Note: the previous window is not closed)")
+            messagebox.showerror(title="Erreur", message="Le format du champ Nb OK ne correspond pas à la base de données. Veuillez entrer un nombre (Remarque : la fenêtre précédente n'est pas fermée)")
 
         try:
             # Check if nbtot is an integer
             nbtot_checked = int(nbtot)
             nbtot_test = True
         except:
-            messagebox.showerror(title="Error", message="The format of the Nb Total field does not match the database. Please enter a number (Note: the previous window is not closed)")
+            messagebox.showerror(title="Erreur", message="Le format du champ Nb Total ne correspond pas à la base de données. Veuillez entrer un nombre (Remarque : la fenêtre précédente n'est pas fermée)")
 
         # If all checks pass, insert the result
         if date_test and time_test and nbok_test and nbtot_test:

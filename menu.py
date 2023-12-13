@@ -31,10 +31,10 @@ def exercise(event, exer):
 
 # Function to display results
 def display_result(event):
-    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate
+    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page
     results_window = tk.Toplevel(window)
     results_window.title("Résultats")
-    results_window.geometry("1200x500")
+    results_window.geometry("1200x600")
     rgb_color_result = (139, 201, 194)
     hex_color_result = '#%02x%02x%02x' % rgb_color_result
     results_window.configure(bg=hex_color_result)
@@ -44,6 +44,8 @@ def display_result(event):
     style.configure("yellow.Horizontal.TProgressbar", background='yellow')
     style.configure("green.Horizontal.TProgressbar", background='green')
 
+    page = 0
+
     # Frames for layout
     frame1 = Frame(results_window, background="white")
     frame1.pack(side=TOP, pady=10)
@@ -51,6 +53,8 @@ def display_result(event):
     frame2.pack(side=TOP, pady=10)
     frame3 = Frame(results_window, background="white", width=900)
     frame3.pack(side=TOP, pady=10)
+    frame4 = Frame(results_window, background="white", width=900)
+    frame4.pack(side=TOP, pady=10)
 
     # Title
     label_title = Label(frame1, text="TRAINING : AFFICHAGE", font=("Arial", 18, "bold"))
@@ -92,6 +96,11 @@ def display_result(event):
     button_create = Button(frame2, text="Créer un résultat", font=("Arial", 12), background="lightgrey", command=create)
     button_create.grid(row=2, column=2)
 
+    button_previouspage = Button(frame4, text="Page précédente", font=("Arial", 12), background="lightgrey", command=previouspage)
+    button_previouspage.pack(side=LEFT)
+    button_nextpage = Button(frame4, text="Page suivante", font=("Arial", 12), background="lightgrey", command=nextpage)
+    button_nextpage.pack(side=LEFT)
+
     # Column Headers
     headers = ["Élève", "Date et Heure", "Temps", "Exercice", "Nb OK", "Nb Total", "% Réussi"]
     for col, header in enumerate(headers):
@@ -101,7 +110,7 @@ def display_result(event):
 
 # Function to filter the result
 def filters():
-    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate
+    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page, data
     pseudo = entry_pseudo.get()
     exercise = entry_exercise.get()
     startdate = entry_startdate.get()
@@ -110,9 +119,8 @@ def filters():
 
     # Retrieve data from the database
     try:
-        data = database.read_result(pseudo, exercise, startdate, enddate)
-    except Exception as e:
-        print(f"Error retrieving data: {e}")
+        data = database.read_result(pseudo, exercise, startdate, enddate)[page]
+    except:
         running = False
 
     if running:
@@ -279,6 +287,26 @@ def update(row, col_name, col_date):
 
     button = Button(frame2, text="Terminer", font=("Arial", 12), background="lightgrey", command=lambda: get_update(row, col_name, col_date))
     button.grid(row=1, column=2)
+
+
+def nextpage():
+    global page, data
+
+    if page <= (len(data) - 3):
+        page += 1
+        filters()
+    else:
+        messagebox.showinfo(title="Info", message="Vous êtes arrivé à la page maximum il n y a pas de donnée après")
+
+
+def previouspage():
+    global page
+
+    if page > 0:
+        page -= 1
+        filters()
+    else:
+        messagebox.showinfo(title="Info", message="Vous êtes arrivé à la page minimum il n y a pas de donnée avant")
 
 
 # Function to take the data for update row
