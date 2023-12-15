@@ -230,7 +230,7 @@ def get_create():
         # Insert data into the database
         database.create_result(student, date, time, exercise, nbok, nbtot, create_window)
         create_window.destroy()
-        messagebox.showinfo(parent=create_window, title="Succès", message="Vos données ont bien été ajoutées à la base de données (la fenêtre s'est fermée)")
+        messagebox.showinfo(title="Succès", message="Vos données ont bien été ajoutées à la base de données (la fenêtre s'est fermée)")
 
 
 # Function for delete data
