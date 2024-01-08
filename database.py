@@ -232,6 +232,21 @@ def update_result(time, nbok, nbtot, name, date):
         query2 = f"UPDATE games_has_players SET {set_clause} WHERE player_id = %s and startdate = %s"
         cursor.execute(query2, (*update_params.values(), data[0], date))
 
+def new_user(pseudo, password, register_window):
+    open_dbconnection()
+    cursor = db_connection.cursor()
+
+    query1 = "SELECT id FROM players WHERE pseudonym = %s"
+    cursor.execute(query1, (pseudo,))
+    data1 = cursor.fetchone()
+
+    if data1 is None:
+        query2 = "INSERT INTO player (pseudonym, password, levelofaccess) values (%s, %s, %s)"
+        cursor.execute(query2, (pseudo, password))
+        messagebox.showinfo(parrent=register_window, title="info", message="Félicitation vous faites partie de nos utilisateurs")
+    else:
+        messagebox.showerror(parrent=register_window, title="Erreur", message="Le pseudonyme entrer est déjà utilisé merci de changer")
+
 
 # Close the database connection
 def close_dbconnection():

@@ -12,6 +12,8 @@ import geo01
 import info02
 import info05
 import database
+import bcrypt
+import re
 
 # Arrays for exercise data
 a_exercise = ["geo01", "info02", "info05"]
@@ -338,6 +340,113 @@ def previouspage():
     else:
         messagebox.showinfo(parent=results_window, title="Info", message="Vous êtes arrivé à la page minimum il n y a pas de donnée avant")
 
+def login():
+    global entry_pseudo, entry_pw, login_window
+    # Create a new window for login
+    login_window = tk.Toplevel(window)
+    login_window.title("Connexion utilisateurs")
+    login_window.geometry("500x400")
+    rgb_color_login = (139, 201, 194)
+    hex_color_login = '#%02x%02x%02x' % rgb_color_login
+    login_window.configure(bg=hex_color_login)
+
+    frame1 = Frame(login_window, background=hex_color_login)
+    frame1.pack(side=TOP, pady=10)
+    frame2 = Frame(login_window, background="white", width=900)
+    frame2.pack(side=TOP, pady=10)
+    frame3 = Frame(login_window, background="white", width=900)
+    frame3.pack(side=TOP, pady=10)
+    frame4 = Frame(login_window, background="white", width=900)
+    frame4.pack(side=TOP, pady=10)
+
+    lbl_title = tk.Label(frame1, text="LOGIN", font=("Arial", 15))
+    lbl_title.grid(row=0, column=1, ipady=5, padx=40, pady=40)
+
+    # Entry fields for user input
+    label_pseudo = Label(frame2, text="Pseudonyme :", font=("Arial", 12))
+    label_pseudo.grid(row=1, column=1)
+    entry_pseudo = Entry(frame2, font=("Arial", 12), width=20, show="")
+    entry_pseudo.grid(row=1, column=2, padx=10)
+    label_pw = Label(frame2, text="Mot de passe :", font=("Arial", 12))
+    label_pw.grid(row=2, column=1)
+    entry_pw = Entry(frame2, font=("Arial", 12), width=20)
+    entry_pw.grid(row=2, column=2, padx=10)
+
+    button_login = Button(frame3, text="Connexion", font=("Arial", 12), background="lightgrey", command=check_login)
+    button_login.grid(row=1, column=1)
+
+    label_pseudo = Label(frame4, text="Inscrivez-vous :", font=("Arial", 12))
+    label_pseudo.grid(row=1, column=1)
+    button_register = Button(frame4, text="Inscription", font=("Arial", 12), background="lightgrey", command=register)
+    button_register.grid(row=1, column=2)
+
+def check_login():
+    print("coucou")
+
+def register():
+    global login_window, entry_pseudo, entry_pw, entry_confpw, register_window
+    login_window.destroy()
+
+    # Create a new window for register
+    register_window = tk.Toplevel(window)
+    register_window.title("Inscription utilisateur")
+    register_window.geometry("500x400")
+    rgb_color_register = (139, 201, 194)
+    rgb_color_register = '#%02x%02x%02x' % rgb_color_register
+    register_window.configure(bg=rgb_color_register)
+
+    frame1 = Frame(register_window, background=rgb_color_register)
+    frame1.pack(side=TOP, pady=10)
+    frame2 = Frame(register_window, background="white", width=900)
+    frame2.pack(side=TOP, pady=10)
+    frame3 = Frame(register_window, background="white", width=900)
+    frame3.pack(side=TOP, pady=10)
+
+    lbl_title = tk.Label(frame1, text="INSCRIPTION", font=("Arial", 15))
+    lbl_title.grid(row=0, column=1, ipady=5, padx=40, pady=40)
+
+    # Entry fields for user input
+    label_pseudo = Label(frame2, text="Pseudonyme :", font=("Arial", 12))
+    label_pseudo.grid(row=1, column=1)
+    entry_pseudo = Entry(frame2, font=("Arial", 12), width=20)
+    entry_pseudo.grid(row=1, column=2, padx=10)
+    label_pw = Label(frame2, text="Mot de passe :", font=("Arial", 12))
+    label_pw.grid(row=2, column=1)
+    entry_pw = Entry(frame2, font=("Arial", 12), width=20, show="●")
+    entry_pw.grid(row=2, column=2, padx=10)
+    label_confpw = Label(frame2, text="Confirmation mot de passe :", font=("Arial", 12))
+    label_confpw.grid(row=3, column=1)
+    entry_confpw = Entry(frame2, font=("Arial", 12), width=20, show="●")
+    entry_confpw.grid(row=3, column=2, padx=10)
+
+    button_login = Button(frame3, text="Inscription", font=("Arial", 12), background="lightgrey", command=check_register)
+    button_login.grid(row=1, column=1)
+
+def check_register():
+    global entry_pseudo, entry_pw, entry_confpw, register_window
+
+    password_pattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
+
+    pseudo = entry_pseudo.get()
+    password = entry_pw.get()
+    confpassword = entry_confpw.get()
+
+    if pseudo == "" or password == "" or confpassword == "":
+        messagebox.showerror(parent=register_window, title="Erreur", message="Il semblerait que vous n'avez pas rempli tous les champs")
+    elif password != confpassword:
+        messagebox.showerror(parent=register_window, title="Erreur", message="Le mot de passe et la confirmation du mot de passe ne sont pas identique")
+    elif not re.match(password_pattern, password):
+        messagebox.showerror(parent=register_window, title="Erreur", message="Votre mot de passe n'est pas assez fort il doit comprendre une majuscule, une minuscule, un chiffre, un caractère spéciale et 8 caractère minimum")
+    else:
+        hashpw = hash_password(password)
+        database.new_user(pseudo, hashpw, register_window)
+
+
+def hash_password(password):
+    password = password
+    password_bytes = password.encode('utf-8')
+    hashed_bytes = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
+    return hashed_bytes.decode('utf-8')
 
 # Main part of your code
 # Main window creation
@@ -373,6 +482,8 @@ btn_display.bind("<Button-1>", lambda e: display_result(e))
 btn_finish = tk.Button(window, text="Quitter", font=("Arial", 15))
 btn_finish.grid(row=2 + 2 * len(a_exercise) // 3, column=1)
 btn_finish.bind("<Button-1>", quit)
+
+login()
 
 # Main loop
 window.mainloop()
