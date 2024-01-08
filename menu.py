@@ -343,7 +343,7 @@ def previouspage():
 def login():
     global entry_pseudo, entry_pw, login_window
     # Create a new window for login
-    login_window = tk.Toplevel(window)
+    login_window = tk.Tk()
     login_window.title("Connexion utilisateurs")
     login_window.geometry("500x400")
     rgb_color_login = (139, 201, 194)
@@ -365,11 +365,11 @@ def login():
     # Entry fields for user input
     label_pseudo = Label(frame2, text="Pseudonyme :", font=("Arial", 12))
     label_pseudo.grid(row=1, column=1)
-    entry_pseudo = Entry(frame2, font=("Arial", 12), width=20, show="")
+    entry_pseudo = Entry(frame2, font=("Arial", 12), width=20)
     entry_pseudo.grid(row=1, column=2, padx=10)
     label_pw = Label(frame2, text="Mot de passe :", font=("Arial", 12))
     label_pw.grid(row=2, column=1)
-    entry_pw = Entry(frame2, font=("Arial", 12), width=20)
+    entry_pw = Entry(frame2, font=("Arial", 12), width=20, show="●")
     entry_pw.grid(row=2, column=2, padx=10)
 
     button_login = Button(frame3, text="Connexion", font=("Arial", 12), background="lightgrey", command=check_login)
@@ -381,14 +381,30 @@ def login():
     button_register.grid(row=1, column=2)
 
 def check_login():
-    print("coucou")
+    global entry_pseudo, entry_pw, window, login_window
+
+    pseudo = entry_pseudo.get()
+    password = entry_pw.get()
+
+    hashpw = database.check_user(pseudo, login_window)
+
+    hashpw = hashpw[0].encode("utf-8")
+    password = password.encode("utf-8")
+
+    if bcrypt.checkpw(password, hashpw):
+        messagebox.showinfo(parent=login_window, title="info", message="Vous vous êtes connecté avec succès")
+        login_window.destroy()
+        main()
+    else:
+        messagebox.showerror(parent=login_window, title="info", message="Vous vous êtes trompé de mot de passe")
+
 
 def register():
     global login_window, entry_pseudo, entry_pw, entry_confpw, register_window
     login_window.destroy()
 
     # Create a new window for register
-    register_window = tk.Toplevel(window)
+    register_window = tk.Tk()
     register_window.title("Inscription utilisateur")
     register_window.geometry("500x400")
     rgb_color_register = (139, 201, 194)
@@ -422,6 +438,7 @@ def register():
     button_login = Button(frame3, text="Inscription", font=("Arial", 12), background="lightgrey", command=check_register)
     button_login.grid(row=1, column=1)
 
+
 def check_register():
     global entry_pseudo, entry_pw, entry_confpw, register_window, window
 
@@ -440,6 +457,7 @@ def check_register():
     else:
         hashpw = hash_password(password)
         database.new_user(pseudo, hashpw, register_window, window)
+        main()
 
 
 def hash_password(password):
@@ -448,42 +466,45 @@ def hash_password(password):
     hashed_bytes = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
     return hashed_bytes.decode('utf-8')
 
+
 # Main part of your code
 # Main window creation
-window = tk.Tk()
-window.title("Training, entraînement cérébral")
-window.geometry("1100x900")
+def main():
+    window = tk.Tk()
+    window.title("Training, entraînement cérébral")
+    window.geometry("1100x900")
 
-# Color definition
-rgb_color = (139, 201, 194)
-hex_color = '#%02x%02x%02x' % rgb_color
-window.configure(bg=hex_color)
-window.grid_columnconfigure((0, 1, 2), minsize=300, weight=1)
+    # Color definition
+    rgb_color = (139, 201, 194)
+    hex_color = '#%02x%02x%02x' % rgb_color
+    window.configure(bg=hex_color)
+    window.grid_columnconfigure((0, 1, 2), minsize=300, weight=1)
 
-# Title creation
-lbl_title = tk.Label(window, text="TRAINING MENU", font=("Arial", 15))
-lbl_title.grid(row=0, column=1, ipady=5, padx=40, pady=40)
+    # Title creation
+    lbl_title = tk.Label(window, text="TRAINING MENU", font=("Arial", 15))
+    lbl_title.grid(row=0, column=1, ipady=5, padx=40, pady=40)
 
-# Labels creation and positioning for exercises
-for ex in range(len(a_exercise)):
-    a_title[ex] = tk.Label(window, text=a_exercise[ex], font=("Arial", 15))
-    a_title[ex].grid(row=1 + 2 * (ex // 3), column=ex % 3, padx=40, pady=10)
+    # Labels creation and positioning for exercises
+    for ex in range(len(a_exercise)):
+        a_title[ex] = tk.Label(window, text=a_exercise[ex], font=("Arial", 15))
+        a_title[ex].grid(row=1 + 2 * (ex // 3), column=ex % 3, padx=40, pady=10)
 
-    a_image[ex] = tk.PhotoImage(file="img/" + a_exercise[ex] + ".gif")
-    albl_image[ex] = tk.Label(window, image=a_image[ex])
-    albl_image[ex].grid(row=2 + 2 * (ex // 3), column=ex % 3, padx=40, pady=10)
-    albl_image[ex].bind("<Button-1>", lambda event, ex=ex: exercise(event=None, exer=a_exercise[ex]))
+        a_image[ex] = tk.PhotoImage(file="img/" + a_exercise[ex] + ".gif")
+        albl_image[ex] = tk.Label(window, image=a_image[ex])
+        albl_image[ex].grid(row=2 + 2 * (ex // 3), column=ex % 3, padx=40, pady=10)
+        albl_image[ex].bind("<Button-1>", lambda event, ex=ex: exercise(event=None, exer=a_exercise[ex]))
 
-# Buttons for displaying results and quitting
-btn_display = tk.Button(window, text="Display results", font=("Arial", 15))
-btn_display.grid(row=1 + 2 * len(a_exercise) // 3, column=1)
-btn_display.bind("<Button-1>", lambda e: display_result(e))
+    # Buttons for displaying results and quitting
+    btn_display = tk.Button(window, text="Display results", font=("Arial", 15))
+    btn_display.grid(row=1 + 2 * len(a_exercise) // 3, column=1)
+    btn_display.bind("<Button-1>", lambda e: display_result(e))
 
-btn_finish = tk.Button(window, text="Quitter", font=("Arial", 15))
-btn_finish.grid(row=2 + 2 * len(a_exercise) // 3, column=1)
-btn_finish.bind("<Button-1>", quit)
+    btn_finish = tk.Button(window, text="Quitter", font=("Arial", 15))
+    btn_finish.grid(row=2 + 2 * len(a_exercise) // 3, column=1)
+    btn_finish.bind("<Button-1>", quit)
+    # Main loop
+    window.mainloop()
 
 login()
+login_window.mainloop()
 
-# Main loop
-window.mainloop()
