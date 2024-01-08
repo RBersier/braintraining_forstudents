@@ -423,7 +423,7 @@ def register():
     button_login.grid(row=1, column=1)
 
 def check_register():
-    global entry_pseudo, entry_pw, entry_confpw, register_window
+    global entry_pseudo, entry_pw, entry_confpw, register_window, window
 
     password_pattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
 
@@ -439,7 +439,7 @@ def check_register():
         messagebox.showerror(parent=register_window, title="Erreur", message="Votre mot de passe n'est pas assez fort il doit comprendre une majuscule, une minuscule, un chiffre, un caractère spéciale et 8 caractère minimum")
     else:
         hashpw = hash_password(password)
-        database.new_user(pseudo, hashpw, register_window)
+        database.new_user(pseudo, hashpw, register_window, window)
 
 
 def hash_password(password):
