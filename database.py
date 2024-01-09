@@ -49,7 +49,7 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
         cursor.execute(query4, (pseudo,))
         data2 = cursor.fetchone()
 
-    x = datetime.datetime.now()
+    x = datetime.now()
     date_hour = x.strftime("%Y-%m-%d %H:%M:%S")
 
     # Insert the result into the games_has_players table
@@ -234,6 +234,9 @@ def update_result(time, nbok, nbtot, name, date):
 
 
 def new_user(pseudo, password, register_window, window):
+    global pseudonym
+    pseudonym = pseudo
+
     open_dbconnection()
     cursor = db_connection.cursor()
 
@@ -249,11 +252,19 @@ def new_user(pseudo, password, register_window, window):
             register_window.destroy()
         else:
             window.destroy()
+        query3 = "SELECT levelofaccess FROM players where pseudonym = %s"
+        cursor.execute(query3, (pseudo,))
+        data2 = cursor.fetchone()
+
+        return data2
     else:
         messagebox.showerror(parent=register_window, title="Erreur", message="Le pseudonyme entrer est déjà utilisé merci de changer")
 
 
 def check_user(pseudo, login_window):
+    global pseudonym
+    pseudonym = pseudo
+
     open_dbconnection()
     cursor = db_connection.cursor()
 
@@ -273,3 +284,7 @@ def check_user(pseudo, login_window):
 # Close the database connection
 def close_dbconnection():
     db_connection.close()
+
+def pseudo():
+    global pseudonym
+    return pseudonym

@@ -48,10 +48,10 @@ def next_color(event):
     display();
 
 def finish():
-    global exercise, nbtrials, nbsuccess, pseudo, entry_pseudo
+    global exercise, nbtrials, nbsuccess
 
     # Obtenir la valeur de l'entrée pour pseudo
-    pseudo = entry_pseudo.get()
+    pseudo = database.pseudo()
 
     # condition pour pas de division par 0
     if nbtrials == 0:
@@ -231,7 +231,7 @@ def display_timer():
 
 
 def open_window_info_05(window):
-    global window_info05, lbl_duration, lbl_result, hex_color, start_date, slider_r, slider_g, slider_b, slider_v, entry_response, canvas, entry_pseudo
+    global window_info05, lbl_duration, lbl_result, hex_color, start_date, slider_r, slider_g, slider_b, slider_v, entry_response, canvas
     window_info05 = tk.Toplevel(window)
     window_info05.title("La couleur perdue")
     window_info05.geometry("1100x900")
@@ -247,10 +247,6 @@ def open_window_info_05(window):
 
     lbl_duration = tk.Label(window_info05, text="0:00", font=("Arial", 15))
     lbl_duration.grid(row=0,column=2, ipady=5, padx=10,pady=10)
-
-    tk.Label(window_info05, text='Pseudo:', font=("Arial", 15)).grid(row=1, column=0, padx=5, pady=5, sticky='E')
-    entry_pseudo = tk.Entry(window_info05, font=("Arial", 15))
-    entry_pseudo.grid(row=1, column=1,sticky='W')
 
     lbl_result = tk.Label(window_info05, text=f"Essais réussis : 0/0", font=("Arial", 15))
     lbl_result.grid( row=1, column=2, ipady=5, padx=20,pady=10)

@@ -340,6 +340,7 @@ def previouspage():
     else:
         messagebox.showinfo(parent=results_window, title="Info", message="Vous êtes arrivé à la page minimum il n y a pas de donnée avant")
 
+
 def login():
     global entry_pseudo, entry_pw, login_window
     # Create a new window for login
@@ -380,15 +381,19 @@ def login():
     button_register = Button(frame4, text="Inscription", font=("Arial", 12), background="lightgrey", command=register)
     button_register.grid(row=1, column=2)
 
+    login_window.mainloop()
+
+
 def check_login():
-    global entry_pseudo, entry_pw, window, login_window
+    global entry_pseudo, entry_pw, window, login_window, levelofaccess
 
     pseudo = entry_pseudo.get()
     password = entry_pw.get()
 
-    hashpw = database.check_user(pseudo, login_window)
+    passaccess = database.check_user(pseudo, login_window)
 
-    hashpw = hashpw[0].encode("utf-8")
+    hashpw = passaccess[0].encode("utf-8")
+    levelofaccess = passaccess[1]
     password = password.encode("utf-8")
 
     if bcrypt.checkpw(password, hashpw):
@@ -438,9 +443,11 @@ def register():
     button_login = Button(frame3, text="Inscription", font=("Arial", 12), background="lightgrey", command=check_register)
     button_login.grid(row=1, column=1)
 
+    register_window.mainloop()
+
 
 def check_register():
-    global entry_pseudo, entry_pw, entry_confpw, register_window, window
+    global entry_pseudo, entry_pw, entry_confpw, register_window, window, levelofaccess, pseudo
 
     password_pattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
 
@@ -456,7 +463,8 @@ def check_register():
         messagebox.showerror(parent=register_window, title="Erreur", message="Votre mot de passe n'est pas assez fort il doit comprendre une majuscule, une minuscule, un chiffre, un caractère spéciale et 8 caractère minimum")
     else:
         hashpw = hash_password(password)
-        database.new_user(pseudo, hashpw, register_window, window)
+        levelofaccess = database.new_user(pseudo, hashpw, register_window, window)
+        levelofaccess = levelofaccess[0]
         main()
 
 
@@ -470,6 +478,7 @@ def hash_password(password):
 # Main part of your code
 # Main window creation
 def main():
+    global window
     window = tk.Tk()
     window.title("Training, entraînement cérébral")
     window.geometry("1100x900")
@@ -495,16 +504,19 @@ def main():
         albl_image[ex].bind("<Button-1>", lambda event, ex=ex: exercise(event=None, exer=a_exercise[ex]))
 
     # Buttons for displaying results and quitting
-    btn_display = tk.Button(window, text="Display results", font=("Arial", 15))
-    btn_display.grid(row=1 + 2 * len(a_exercise) // 3, column=1)
-    btn_display.bind("<Button-1>", lambda e: display_result(e))
+    if levelofaccess > 1:
+        btn_display = tk.Button(window, text="Display results", font=("Arial", 15))
+        btn_display.grid(row=1 + 2 * len(a_exercise) // 3, column=1)
+        btn_display.bind("<Button-1>", lambda e: display_result(e))
 
     btn_finish = tk.Button(window, text="Quitter", font=("Arial", 15))
     btn_finish.grid(row=2 + 2 * len(a_exercise) // 3, column=1)
     btn_finish.bind("<Button-1>", quit)
+
+    btn_logout = tk.Button(window, text="Logout", font=("Arial", 15), command=lambda: [window.destroy(), login()])
+    btn_logout.grid(row=4 + 2 * len(a_exercise) // 3, column=1)
+
     # Main loop
     window.mainloop()
 
 login()
-login_window.mainloop()
-

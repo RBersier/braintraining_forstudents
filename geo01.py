@@ -97,10 +97,10 @@ def display_timer():
 
 
 def finish():
-    global exercise, nbtrials, nbsuccess, pseudo, entry_pseudo
+    global exercise, nbtrials, nbsuccess
 
     # Obtenir la valeur de l'entrée pour pseudo
-    pseudo = entry_pseudo.get()
+    pseudo = database.pseudo()
 
     # condition pour pas de division par 0
     if nbtrials == 0:
@@ -126,7 +126,7 @@ def finish():
 
 def open_window_geo_01(window):
     # window = tk.Tk()
-    global window_geo01, hex_color, lbl_title, lbl_duration, lbl_result, lbl_target, canvas, start_date, pseudo, entry_pseudo
+    global window_geo01, hex_color, lbl_title, lbl_duration, lbl_result, lbl_target, canvas, start_date
     window_geo01 = tk.Toplevel(window)
 
     window_geo01.title("Exercice de géométrie")
@@ -143,10 +143,6 @@ def open_window_geo_01(window):
 
     lbl_duration = tk.Label(window_geo01, text="0:00", font=("Arial", 15))
     lbl_duration.grid(row=0,column=2, ipady=5, padx=10,pady=10)
-
-    tk.Label(window_geo01, text='Pseudo:', font=("Arial", 15)).grid(row=1, column=0, padx=5, pady=5)
-    entry_pseudo = tk.Entry(window_geo01, font=("Arial", 15))
-    entry_pseudo.grid(row=1, column=1)
 
     lbl_result = tk.Label(window_geo01, text=f"Essais réussis : 0/0", font=("Arial", 15))
     lbl_result.grid(row=1, column=3, padx=5, pady=5, columnspan=4)
@@ -171,7 +167,7 @@ def open_window_geo_01(window):
     # binding actions (canvas & buttons)
     canvas.bind("<Button-1>", canvas_click)
     btn_next.bind("<Button-1>", next_point)
-    btn_finish.bind("<ButtonRelease-1>",lambda event=None: finish())
+    btn_finish.bind("<ButtonRelease-1>", lambda event=None: finish())
 
     # main loop
     window_geo01.mainloop()
