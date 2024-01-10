@@ -281,9 +281,100 @@ def check_user(pseudo, login_window):
         return data2
 
 
+# All data to show the results
+def read_user():
+    open_dbconnection()
+    cursor = db_connection.cursor()
+
+    # Construct the base query
+    query1 = "SELECT players.pseudonym, players.levelofaccess FROM players"
+    cursor.execute(query1)
+    data = cursor.fetchall()
+
+    return data
+
+def create_user_db(pseudo, password, access, create_user_window):
+    global pseudonym
+    pseudonym = pseudo
+
+    open_dbconnection()
+    cursor = db_connection.cursor()
+
+    query1 = "SELECT id FROM players WHERE pseudonym = %s"
+    cursor.execute(query1, (pseudo,))
+    data1 = cursor.fetchone()
+
+    if data1 is None:
+        if 1 <= int(access) <= 3:
+            query2 = "INSERT INTO players (pseudonym, password, levelofaccess) values (%s, %s, %s)"
+            cursor.execute(query2, (pseudo, password, access))
+            messagebox.showinfo(parent=create_user_window, title="Succès", message="Vos données ont bien été ajoutées à la base de données")
+            create_user_window.destroy()
+        else:
+            messagebox.showerror(parent=create_user_window, title="Erreur", message="Le niveau d'accèss est erroné (rappel 1 = éléves, 2 = professeur, 3 = admin)")
+    else:
+        messagebox.showerror(parent=create_user_window, title="Erreur", message="Le pseudonyme entrer est déjà utilisé merci de changer")
+
+
+def delete_user(name):
+    open_dbconnection()
+    cursor = db_connection.cursor()
+
+    # Get the player's ID
+    query1 = "SELECT id FROM players WHERE pseudonym = %s"
+    cursor.execute(query1, (name,))
+    data = cursor.fetchone()
+
+    # Delete the result based on player ID and start date
+    query2 = "DELETE FROM players WHERE pseudonym = %s"
+    cursor.execute(query2, (name,))
+
+def update_user(user, hashpw, access, origin, update_user_window):
+    open_dbconnection()
+    cursor = db_connection.cursor()
+
+    user_test = True
+    hashpw_test = True
+
+    if user == "":
+        user_test = False
+        user_checked = user
+    if hashpw == "":
+        hashpw_test = False
+        hashpw_checked = hashpw
+    if access == "":
+        access_test = False
+    elif 1 <= int(access) <= 3:
+        access_test = True
+        access_checked = access
+    else:
+        raise ValueError("Le niveau d'accès est erroné (rappel 1 = élèves, 2 = professeur, 3 = admin)")
+
+    update_params = {}
+
+    # If time is valid, add it to the update parameters
+    if user_test:
+        update_params["pseudonym"] = user_checked
+
+    # If nbok is valid, add it to the update parameters
+    if hashpw_test:
+        update_params["password"] = hashpw_checked
+
+    # If nbtot is valid, add it to the update parameters
+    if access_test:
+        update_params["levelofaccess"] = access_checked
+
+    # If there are update parameters, update the database
+    if update_params:
+        set_clause = ", ".join([f"{key} = %s" for key in update_params.keys()])
+        query2 = f"UPDATE players SET {set_clause} WHERE pseudonym = %s"
+        cursor.execute(query2, (*update_params.values(), origin))
+
+
 # Close the database connection
 def close_dbconnection():
     db_connection.close()
+
 
 def pseudo():
     global pseudonym
