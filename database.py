@@ -15,8 +15,7 @@ from datetime import datetime
 # Function for opening a session in MySQL
 def open_dbconnection():
     global db_connection
-    db_connection = mysql.connector.connect(host='127.0.0.1', port='3306', user='root', password='root',
-                                            database='Braintrainning', buffered=True, autocommit=True)
+    db_connection = mysql.connector.connect(host='127.0.0.1', port='3306', user='Ryan', password='root', database='Braintrainning', buffered=True, autocommit=True)
 
 
 # Save result in the database
