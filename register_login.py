@@ -8,15 +8,14 @@ Version: 1.0
 
 import tkinter as tk
 from tkinter import *
-from tkinter import ttk
 from tkinter import messagebox
-from tkcalendar import DateEntry
-import geo01
-import info02
-import info05
 import database
 import bcrypt
 import re
+import menu
+import CRUD_users
+
+
 def login():
     global entry_pseudo, entry_pw, login_window
     # Create a new window for login
@@ -75,7 +74,7 @@ def check_login():
     if bcrypt.checkpw(password, hashpw):
         messagebox.showinfo(parent=login_window, title="info", message="Vous vous êtes connecté avec succès")
         login_window.destroy()
-        main()
+        menu.main(levelofaccess)
     else:
         messagebox.showerror(parent=login_window, title="info", message="Vous vous êtes trompé de mot de passe")
 
@@ -138,14 +137,10 @@ def check_register():
     elif not re.match(password_pattern, password):
         messagebox.showerror(parent=register_window, title="Erreur", message="Votre mot de passe n'est pas assez fort il doit comprendre une majuscule, une minuscule, un chiffre, un caractère spéciale et 8 caractère minimum")
     else:
-        hashpw = hash_password(password)
+        hashpw = CRUD_users.hash_password(password)
         levelofaccess = database.new_user(pseudo, hashpw, register_window, window)
         levelofaccess = levelofaccess[0]
-        main()
+        menu.main(levelofaccess)
 
 
-def hash_password(password):
-    password = password
-    password_bytes = password.encode('utf-8')
-    hashed_bytes = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
-    return hashed_bytes.decode('utf-8')
+login()

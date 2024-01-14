@@ -11,14 +11,13 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import DateEntry
-import geo01
-import info02
-import info05
 import database
-import bcrypt
-import re
-def display_result(event):
-    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page, results_window
+
+
+def display_result(event, window):
+    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page, results_window, windows
+
+    windows = window
     results_window = tk.Toplevel(window)
     results_window.title("Résultats")
     results_window.geometry("1200x600")
@@ -151,10 +150,10 @@ def filters():
 
 
 def create():
-    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot, create_window
+    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot, create_window, windows
 
     # Create a new window for data entry
-    create_window = tk.Toplevel(window)
+    create_window = tk.Toplevel(windows)
     create_window.title("Création d'un résultat")
     create_window.geometry("650x200")
     rgb_color_result = (139, 201, 194)
@@ -243,10 +242,10 @@ def delete(row, col_name, col_date):
 
 # Function for update data
 def update(row, col_name, col_date):
-    global entry_Time, entry_Nbok, entry_Nbtot, update_window
+    global entry_Time, entry_Nbok, entry_Nbtot, update_window, windows
 
     # Create a new window for data update
-    update_window = tk.Toplevel(window)
+    update_window = tk.Toplevel(windows)
     update_window.title("Modification de données")
     update_window.geometry("700x200")
     rgb_color_update = (139, 201, 194)

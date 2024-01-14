@@ -8,18 +8,17 @@ Version: 1.0
 
 import tkinter as tk
 from tkinter import *
-from tkinter import ttk
 from tkinter import messagebox
-from tkcalendar import DateEntry
-import geo01
-import info02
-import info05
 import database
-import bcrypt
 import re
-def administration():
-    global frame3, admin_window
-    admin_window = tk.Toplevel(window)
+import bcrypt
+
+
+def administration(window):
+    global frame3, admin_window, windows
+
+    windows = window
+    admin_window = tk.Toplevel(windows)
     admin_window.title("adminsistration")
     admin_window.geometry("800x600")
     rgb_color_admin = (139, 201, 194)
@@ -49,6 +48,7 @@ def administration():
     for col, header in enumerate(headers):
         label = tk.Label(frame3, text=header, font=("Arial", 12, "bold"))
         label.grid(row=0, column=col, padx=35)
+
 
 def show_user():
     global frame3
@@ -83,11 +83,13 @@ def show_user():
                 button_update = Button(frame3, text="update", font=("Arial", 12), background="lightgrey",
                                        command=lambda row=i + 1: update_user(row, 0))
                 button_update.grid(row=i + 1, column=8)
+
+
 def create_user():
-    global entry_user, entry_access, entry_password, entry_confpassword, create_user_window
+    global entry_user, entry_access, entry_password, entry_confpassword, create_user_window, windows
 
     # Create a new window for data entry
-    create_user_window = tk.Toplevel(window)
+    create_user_window = tk.Toplevel(windows)
     create_user_window.title("Création d'un utilisateur")
     create_user_window.geometry("850x200")
     rgb_color_create_user = (139, 201, 194)
@@ -168,10 +170,10 @@ def delete_user(row, col_name):
 
 # Function for update data
 def update_user(row, col_name):
-    global entry_pseudo, entry_password, entry_confpw, entry_access,  update_user_window
+    global entry_pseudo, entry_password, entry_confpw, entry_access,  update_user_window, windows
 
     # Create a new window for data update
-    update_user_window = tk.Toplevel(window)
+    update_user_window = tk.Toplevel(windows)
     update_user_window.title("Modification d'utilisateurs")
     update_user_window.geometry("850x200")
     rgb_color_update_user = (139, 201, 194)
@@ -245,3 +247,10 @@ def get_update_user(row, col_name):
                 update_user_window.destroy()
         else:
             messagebox.showerror(parent=update_user_window, title="Erreur", message="le mot de passe n'est pas écivalent à sa confirmation")
+
+
+def hash_password(password):
+    password = password
+    password_bytes = password.encode('utf-8')
+    hashed_bytes = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
+    return hashed_bytes.decode('utf-8')
