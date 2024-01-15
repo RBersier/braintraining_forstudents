@@ -62,15 +62,15 @@ def main(levelofaccess):
         btn_display.bind("<Button-1>", lambda e: CRUD_results.display_result(e, window))
 
     btn_finish = tk.Button(window, text="Quitter", font=("Arial", 15))
-    btn_finish.grid(row=2 + 2 * len(a_exercise) // 3, column=1)
+    btn_finish.grid(row=4 + 2 * len(a_exercise) // 3, column=1)
     btn_finish.bind("<Button-1>", quit)
 
     if levelofaccess > 2:
-        btn_admin = tk.Button(window, text="administration", font=("Arial", 15), command=lambda : CRUD_users.administration(window))
-        btn_admin.grid(row=3 + 2 * len(a_exercise) // 3, column=1)
+        btn_admin = tk.Button(window, text="Administration", font=("Arial", 15), command=lambda : CRUD_users.administration(window))
+        btn_admin.grid(row=2 + 2 * len(a_exercise) // 3, column=1)
 
     btn_logout = tk.Button(window, text="Logout", font=("Arial", 15), command=lambda: [window.destroy(), return_login()])
-    btn_logout.grid(row=4 + 2 * len(a_exercise) // 3, column=1)
+    btn_logout.grid(row=3 + 2 * len(a_exercise) // 3, column=1)
 
     # Main loop
     window.mainloop()

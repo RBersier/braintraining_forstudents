@@ -12,6 +12,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import DateEntry
 import database
+from datetime import datetime
 
 
 def display_result(event, window):
@@ -76,8 +77,7 @@ def display_result(event, window):
     entry_enddate.grid(row=1, column=8)
 
     # Buttons
-    button_show = Button(frame2, text="Afficher les résultats", font=("Arial", 12), background="lightgrey",
-                         command=filters)
+    button_show = Button(frame2, text="Afficher les résultats", font=("Arial", 12), background="lightgrey", command=filters)
     button_show.grid(row=2, column=1)
     button_create = Button(frame2, text="Créer un résultat", font=("Arial", 12), background="lightgrey", command=create)
     button_create.grid(row=2, column=2)
@@ -96,12 +96,19 @@ def display_result(event, window):
 
 # Function to filter the result
 def filters():
-    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page, data, results_window
+    global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page, data
     pseudo = entry_pseudo.get()
     exercise = entry_exercise.get()
     startdate = entry_startdate.get()
     enddate = entry_enddate.get()
     running = True
+
+    if not startdate == "" and not enddate == "":
+        conv_startdate = datetime.strptime(startdate, "%Y-%m-%d")
+        conv_enddate = datetime.strptime(enddate, "%Y-%m-%d")
+        if not conv_startdate <= conv_enddate:
+            messagebox.showerror(parent=results_window, title="Erreur", message="Attention la date de début doit se situer avant la date de fin dans la chronologie temporelle")
+            running = False
 
     # Retrieve data from the database
     try:
@@ -141,19 +148,19 @@ def filters():
                 label = tk.Label(frame3, text=value, font=("Arial", 10))
                 label.grid(row=i + 1, column=col, padx=30)
                 # Add buttons for delete and update operations
-                button_delete = Button(frame3, text="delete", font=("Arial", 12), background="lightgrey",
+                button_delete = Button(frame3, text="supprimer", font=("Arial", 12), background="lightgrey",
                                        command=lambda row=i + 1: delete(row, 0, 1))
                 button_delete.grid(row=i + 1, column=7)
-                button_update = Button(frame3, text="update", font=("Arial", 12), background="lightgrey",
+                button_update = Button(frame3, text="modifier", font=("Arial", 12), background="lightgrey",
                                        command=lambda row=i + 1: update(row, 0, 1))
                 button_update.grid(row=i + 1, column=8)
 
 
 def create():
-    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot, create_window, windows
+    global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot, create_window
 
     # Create a new window for data entry
-    create_window = tk.Toplevel(windows)
+    create_window = tk.Toplevel(results_window)
     create_window.title("Création d'un résultat")
     create_window.geometry("650x200")
     rgb_color_result = (139, 201, 194)
@@ -208,15 +215,25 @@ def get_create():
     exercise = entry_Exercise.get()
     nbok = entry_Nbok.get()
     nbtot = entry_Nbtot.get()
+    running = True
 
-    # Check if any field is empty
-    if student == "" or date == "" or time == "" or exercise == "" or nbok == "" or nbtot == "":
-        messagebox.showerror(parent=create_window, title="Erreur", message="Merci de bien remplir tous les champs pour pouvoir insérer un nouveau résultat")
-    else:
-        # Insert data into the database
-        database.create_result(student, date, time, exercise, nbok, nbtot, create_window)
-        create_window.destroy()
-        messagebox.showinfo(title="Succès", message="Vos données ont bien été ajoutées à la base de données (la fenêtre s'est fermée)")
+    if not nbok == "" and not nbtot == "":
+        if not nbok <= nbtot:
+            messagebox.showerror(parent=create_window, title="Erreur", message="Merci de bien remplir faire en sorte que nbok doit être inférieur à nbtot")
+            running = False
+    if running:
+        # Check if any field is empty
+        if student == "" or date == "" or time == "" or exercise == "" or nbok == "" or nbtot == "":
+            messagebox.showerror(parent=create_window, title="Erreur", message="Merci de bien remplir tous les champs pour pouvoir insérer un nouveau résultat")
+        else:
+            try:
+                # Insert data into the database
+                database.create_result(student, date, time, exercise, nbok, nbtot, create_window)
+                messagebox.showinfo(parent=create_window, title="Succès", message="Vos données ont bien été ajoutées à la base de données (la fenêtre s'est fermée)")
+                create_window.destroy()
+                filters()
+            except ValueError as ve:
+                messagebox.showerror(parent=create_window, title="Erreur", message=f"{ve}")
 
 
 # Function for delete data
@@ -238,14 +255,15 @@ def delete(row, col_name, col_date):
         # Delete data from the database
         database.delete_result(name_obj, date_obj)
         messagebox.showinfo(parent=results_window, title="Info", message="Les données ont été supprimées. N'oubliez pas d'actualiser.")
+        filters()
 
 
 # Function for update data
 def update(row, col_name, col_date):
-    global entry_Time, entry_Nbok, entry_Nbtot, update_window, windows
+    global entry_Time, entry_Nbok, entry_Nbtot, update_window
 
     # Create a new window for data update
-    update_window = tk.Toplevel(windows)
+    update_window = tk.Toplevel(results_window)
     update_window.title("Modification de données")
     update_window.geometry("700x200")
     rgb_color_update = (139, 201, 194)
@@ -271,38 +289,49 @@ def update(row, col_name, col_date):
     entry_Nbtot = Entry(frame1, font=("Arial", 12), width=20)
     entry_Nbtot.grid(row=2, column=3, padx=10)
 
-    button = Button(frame2, text="Terminer", font=("Arial", 12), background="lightgrey", command=lambda: get_update(row, col_name, col_date))
+    button = Button(frame2, text="Terminer", font=("Arial", 12), background="lightgrey", command=lambda: get_update(row, col_name, col_date, update_window))
     button.grid(row=1, column=2)
 
 
 # Function to take the data for update row
-def get_update(row, col_name, col_date):
-    global entry_Time, entry_Nbok, entry_Nbtot, update_window
+def get_update(row, col_name, col_date, update_window):
+    global entry_Time, entry_Nbok, entry_Nbtot
 
     # Retrieve updated data from entry widgets
     time = entry_Time.get()
     nbok = entry_Nbok.get()
     nbtot = entry_Nbtot.get()
+    running = True
 
-    # Get name and date from the selected row
-    name = frame3.grid_slaves(row=row, column=col_name)
-    date = frame3.grid_slaves(row=row, column=col_date)
+    if not nbok == "" and not nbtot == "":
+        if not nbok <= nbtot:
+            messagebox.showerror(parent=update_window, title="Erreur", message="Merci de bien remplir faire en sorte que nbok doit être inférieur à nbtot")
+            running = False
+    if running:
+        # Get name and date from the selected row
+        name = frame3.grid_slaves(row=row, column=col_name)
+        date = frame3.grid_slaves(row=row, column=col_date)
 
-    if name and date:
-        name_widget = name[0]
-        date_widget = date[0]
-    if isinstance(name_widget and date_widget, tk.Label):
-        name_obj = name_widget.cget('text')
-        date_obj = date_widget.cget('text')
+        if name and date:
+            name_widget = name[0]
+            date_widget = date[0]
+        if isinstance(name_widget and date_widget, tk.Label):
+            name_obj = name_widget.cget('text')
+            date_obj = date_widget.cget('text')
 
-    # Check if any field is empty
-    if time == "" and nbok == "" and nbtot == "":
-        messagebox.showerror(parent=update_window, title="Erreur", message="Aucun champ n'est rempli ou un ou plusieurs champs ne correspondent pas (nb ok et nb total doivent être des entiers, et le format de temps doit être hh:mm:ss)")
-    else:
-        # Update data in the database
-        database.update_result(time, nbok, nbtot, name_obj, date_obj)
-        update_window.destroy()
-        messagebox.showinfo(parent=update_window, title="Succès", message="Les données ont bien été modifiées dans la base de données (la fenêtre s'est fermée)")
+
+        # Check if any field is empty
+        if time == "" and nbok == "" and nbtot == "":
+            messagebox.showerror(parent=update_window, title="Erreur", message="Aucun champ n'est rempli ou un ou plusieurs champs ne correspondent pas (nb ok et nb total doivent être des entiers, et le format de temps doit être hh:mm:ss)")
+        else:
+            # Update data in the database
+            try:
+                database.update_result(time, nbok, nbtot, name_obj, date_obj)
+                messagebox.showinfo(parent=update_window, title="Succès", message="Les données ont bien été modifiées dans la base de données")
+                update_window.destroy()
+                filters()
+            except ValueError as ve:
+                messagebox.showerror(parent=update_window, title="Erreur", message=f"{ve}")
 
 
 def nextpage():

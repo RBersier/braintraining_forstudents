@@ -77,10 +77,10 @@ def show_user():
                 label = tk.Label(frame3, text=value, font=("Arial", 10))
                 label.grid(row=i + 1, column=col, padx=30)
                 # Add buttons for delete and update operations
-                button_delete = Button(frame3, text="delete", font=("Arial", 12), background="lightgrey",
+                button_delete = Button(frame3, text="supprimer", font=("Arial", 12), background="lightgrey",
                                        command=lambda row=i + 1: delete_user(row, 0))
                 button_delete.grid(row=i + 1, column=7)
-                button_update = Button(frame3, text="update", font=("Arial", 12), background="lightgrey",
+                button_update = Button(frame3, text="modifier", font=("Arial", 12), background="lightgrey",
                                        command=lambda row=i + 1: update_user(row, 0))
                 button_update.grid(row=i + 1, column=8)
 
@@ -141,8 +141,13 @@ def get_create_user():
     else:
         if password == conf_pw:
             if re.match(password_pattern, password):
-                hashpw = hash_password(password)
-                database.create_user_db(user, hashpw, access, create_user_window)
+                try:
+                    hashpw = hash_password(password)
+                    database.create_user_db(user, hashpw, access, create_user_window)
+                    messagebox.showinfo(parent=create_user_window, title="Succès", message="Vos données ont bien été ajoutées à la base de données")
+                    show_user()
+                except ValueError as ve:
+                    messagebox.showerror(parent=create_user_window, title="Erreur", message=f"{ve}")
             else:
                 messagebox.showerror(parent=create_user_window, title="Erreur", message="Votre mot de passe n'est pas assez fort il doit comprendre une majuscule, une minuscule, un chiffre, un caractère spéciale et 8 caractère minimum")
         else:
@@ -166,6 +171,7 @@ def delete_user(row, col_name):
         # Delete data from the database
         database.delete_user(name_obj)
         messagebox.showinfo(parent=admin_window, title="Info", message="Les données ont été supprimées. N'oubliez pas d'actualiser.")
+        show_user()
 
 
 # Function for update data
@@ -245,6 +251,7 @@ def get_update_user(row, col_name):
             else:
                 messagebox.showinfo(parent=update_user_window, title="Succès", message="Les données ont bien été modifiées dans la base de données (la fenêtre s'est fermée)")
                 update_user_window.destroy()
+                show_user()
         else:
             messagebox.showerror(parent=update_user_window, title="Erreur", message="le mot de passe n'est pas écivalent à sa confirmation")
 

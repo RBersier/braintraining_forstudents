@@ -7,7 +7,6 @@ Version: 1.0
 """
 
 import mysql.connector
-from tkinter import messagebox
 import datetime
 from datetime import datetime
 
@@ -74,21 +73,17 @@ def read_result(pseudo, exercise, startdate, enddate, result_windows):
     if not enddate == "":
         query1 += f" AND games_has_players.startdate <= '{enddate}'"
 
-    try:
-        # Execute the query
-        cursor.execute(query1)
-        data = cursor.fetchall()
-        query_data = []
-        query_data.append([])
-        actualN = 1
-        for user in range(len(data)):
-            query_data[actualN - 1].append(data[user])
-            if user == (actualN * 9):
-                query_data.append([])
-                actualN += 1
-    except:
-        # Handle errors related to date format
-        messagebox.showerror(parrent=result_windows, title="Erreur", message="Il peut y avoir une erreur dans le format de la date de début ou de fin. Veuillez essayer le format suivant : AAAA-MM-JJ")
+    # Execute the query
+    cursor.execute(query1)
+    data = cursor.fetchall()
+    query_data = []
+    query_data.append([])
+    actualN = 1
+    for user in range(len(data)):
+        query_data[actualN - 1].append(data[user])
+        if user == (actualN * 9):
+            query_data.append([])
+            actualN += 1
     return query_data
 
 
@@ -109,15 +104,11 @@ def create_result(student, date, time, exercise, nbok, nbtot, create_window):
 
     # If the game doesn't exist, show an error message
     if data1 is None:
-        messagebox.showerror(parrent=create_window, title="Erreur", message="Le champ Exercice ne peut contenir que GEO01, INFO02 ou INFO05")
+        raise ValueError("Le champ Exercice ne peut contenir que GEO01, INFO02 ou INFO05")
     else:
         # If the player doesn't exist, insert it
         if data2 is None:
-            query2 = "INSERT INTO players (pseudonym) values (%s)"
-            cursor.execute(query2, (student,))
-            query4 = "SELECT id FROM players WHERE pseudonym = %s"
-            cursor.execute(query4, (student,))
-            data2 = cursor.fetchone()
+            raise ValueError("L'utilisateurs avec lequel vous voulez rajouter un résultat n'existe pas")
 
         format_date = "%Y-%m-%d %H:%M:%S"
         format_time = "%H:%M:%S"
@@ -131,28 +122,28 @@ def create_result(student, date, time, exercise, nbok, nbtot, create_window):
             date_checked = datetime.strptime(date, format_date)
             date_test = True
         except:
-            messagebox.showerror(parrent=create_window, title="Erreur", message="Le format du champ Date et Heure ne correspond pas à la base de données. Veuillez utiliser : AAAA-MM-JJ hh:mm:ss")
+            raise ValueError("Le format du champ Date et Heure ne correspond pas à la base de données. Veuillez utiliser : AAAA-MM-JJ hh:mm:ss")
 
         try:
             # Check if the time is in the correct format
             time_checked = datetime.strptime(time, format_time)
             time_test = True
         except:
-            messagebox.showerror(parrent=create_window, title="Erreur", message="Le format du champ Heure ne correspond pas à la base de données. Veuillez utiliser : hh:mm:ss")
+            raise ValueError("Le format du champ Heure ne correspond pas à la base de données. Veuillez utiliser : hh:mm:ss")
 
         try:
             # Check if nbok is an integer
             nbok_checked = int(nbok)
             nbok_test = True
         except:
-            messagebox.showerror(parrent=create_window, title="Erreur", message="Le format du champ Nb OK ne correspond pas à la base de données. Veuillez entrer un nombre (Remarque : la fenêtre précédente n'est pas fermée)")
+            raise ValueError("Le format du champ Nb OK ne correspond pas à la base de données. Veuillez entrer un nombre (Remarque : la fenêtre précédente n'est pas fermée)")
 
         try:
             # Check if nbtot is an integer
             nbtot_checked = int(nbtot)
             nbtot_test = True
         except:
-            messagebox.showerror(parrent=create_window, title="Erreur", message="Le format du champ Nb Total ne correspond pas à la base de données. Veuillez entrer un nombre")
+            raise ValueError("Le format du champ Nb Total ne correspond pas à la base de données. Veuillez entrer un nombre")
 
         # If all checks pass, insert the result
         if date_test and time_test and nbok_test and nbtot_test:
@@ -186,29 +177,37 @@ def update_result(time, nbok, nbtot, name, date):
     data = cursor.fetchone()
 
     format_time = "%H:%M:%S"
-    time_test = False
-    nbok_test = False
-    nbtot_test = False
-
-    try:
-        # Check if the time is in the correct format
-        time_checked = datetime.strptime(time, format_time)
-        time_test = True
-    except:
+    if not time == "":
+        try:
+            # Check if the time is in the correct format
+            time_checked = datetime.strptime(time, format_time)
+            time_test = True
+        except:
+            time_test = False
+            raise ValueError("le champs temps n'a pas le bon format essayé hh:mm:ss")
+    else:
         time_test = False
 
-    try:
-        # Check if nbok is an integer
-        nbok_checked = int(nbok)
-        nbok_test = True
-    except:
+    if not nbok == "":
+        try:
+            # Check if nbok is an integer
+            nbok_checked = int(nbok)
+            nbok_test = True
+        except:
+            nbok_test = False
+            raise ValueError("le champs Nb ok doit être entier")
+    else:
         nbok_test = False
 
-    try:
-        # Check if nbtot is an integer
-        nbtot_checked = int(nbtot)
-        nbtot_test = True
-    except:
+    if not nbtot == "":
+        try:
+            # Check if nbtot is an integer
+            nbtot_checked = int(nbtot)
+            nbtot_test = True
+        except:
+            nbtot_test = False
+            raise ValueError("le champs Nb tot doit être entier")
+    else:
         nbtot_test = False
 
     update_params = {}
@@ -246,18 +245,12 @@ def new_user(pseudo, password, register_window, window):
     if data1 is None:
         query2 = "INSERT INTO players (pseudonym, password) values (%s, %s)"
         cursor.execute(query2, (pseudo, password))
-        msg_box = messagebox.askyesno(parent=register_window, title="Question", message="Félicitation vous faites partie de nos utilisateurs. Est-ce que vous voulez démarrer l'application")
-        if msg_box:
-            register_window.destroy()
-        else:
-            window.destroy()
         query3 = "SELECT levelofaccess FROM players where pseudonym = %s"
         cursor.execute(query3, (pseudo,))
         data2 = cursor.fetchone()
-
         return data2
     else:
-        messagebox.showerror(parent=register_window, title="Erreur", message="Le pseudonyme entrer est déjà utilisé merci de changer")
+        raise ValueError("Le pseudonyme entrer est déjà utilisé merci de changer")
 
 
 def check_user(pseudo, login_window):
@@ -272,7 +265,7 @@ def check_user(pseudo, login_window):
     data1 = cursor.fetchone()
 
     if data1 is None:
-        messagebox.showerror(parent=login_window, title="Erreur", message="Le pseudonyme entrer n'existe pas")
+        raise ValueError("Le pseudonyme entrer n'existe pas")
     else:
         query2 = "SELECT password, levelofaccess FROM players WHERE pseudonym = %s"
         cursor.execute(query2, (pseudo,))
@@ -307,12 +300,11 @@ def create_user_db(pseudo, password, access, create_user_window):
         if 1 <= int(access) <= 3:
             query2 = "INSERT INTO players (pseudonym, password, levelofaccess) values (%s, %s, %s)"
             cursor.execute(query2, (pseudo, password, access))
-            messagebox.showinfo(parent=create_user_window, title="Succès", message="Vos données ont bien été ajoutées à la base de données")
             create_user_window.destroy()
         else:
-            messagebox.showerror(parent=create_user_window, title="Erreur", message="Le niveau d'accèss est erroné (rappel 1 = éléves, 2 = professeur, 3 = admin)")
+            raise ValueError("Le niveau d'accèss est erroné (rappel 1 = éléves, 2 = professeur, 3 = admin)")
     else:
-        messagebox.showerror(parent=create_user_window, title="Erreur", message="Le pseudonyme entrer est déjà utilisé merci de changer")
+        raise ValueError("Le pseudonyme entrer est déjà utilisé merci de changer")
 
 
 def delete_user(name):

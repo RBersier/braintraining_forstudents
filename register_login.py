@@ -72,9 +72,12 @@ def check_login():
     password = password.encode("utf-8")
 
     if bcrypt.checkpw(password, hashpw):
-        messagebox.showinfo(parent=login_window, title="info", message="Vous vous êtes connecté avec succès")
-        login_window.destroy()
-        menu.main(levelofaccess)
+        try:
+            messagebox.showinfo(parent=login_window, title="info", message="Vous vous êtes connecté avec succès")
+            login_window.destroy()
+            menu.main(levelofaccess)
+        except ValueError as ve:
+            messagebox.showerror(parent=login_window, title="Erreur", message=f"{ve}")
     else:
         messagebox.showerror(parent=login_window, title="info", message="Vous vous êtes trompé de mot de passe")
 
@@ -141,6 +144,11 @@ def check_register():
         levelofaccess = database.new_user(pseudo, hashpw, register_window, window)
         levelofaccess = levelofaccess[0]
         menu.main(levelofaccess)
+        msg_box = messagebox.askyesno(parent=register_window, title="Question", message="Félicitation vous faites partie de nos utilisateurs. Est-ce que vous voulez démarrer l'application")
+        if msg_box:
+            register_window.destroy()
+        else:
+            window.destroy()
 
 
 login()
