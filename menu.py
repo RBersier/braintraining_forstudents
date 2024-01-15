@@ -24,8 +24,10 @@ dict_games = {"geo01": geo01.open_window_geo_01, "info02": info02.open_window_in
 def exercise(event, exer):
     dict_games[exer](window)
 
+
 def return_login():
     from register_login import login
+
 
 # Main part of your code
 # Main window creation

@@ -320,6 +320,7 @@ def delete_user(name):
     query2 = "DELETE FROM players WHERE pseudonym = %s"
     cursor.execute(query2, (name,))
 
+
 def update_user(user, hashpw, access, origin, update_user_window):
     open_dbconnection()
     cursor = db_connection.cursor()
