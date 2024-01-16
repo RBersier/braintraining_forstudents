@@ -143,8 +143,8 @@ def get_create_user():
             if re.match(password_pattern, password):
                 try:
                     hashpw = hash_password(password)
-                    database.create_user_db(user, hashpw, access, create_user_window)
                     messagebox.showinfo(parent=create_user_window, title="Succès", message="Vos données ont bien été ajoutées à la base de données")
+                    database.create_user_db(user, hashpw, access, create_user_window)
                     show_user()
                 except ValueError as ve:
                     messagebox.showerror(parent=create_user_window, title="Erreur", message=f"{ve}")
@@ -225,7 +225,7 @@ def get_update_user(row, col_name):
     confpw = entry_confpw.get()
     access = entry_access.get()
 
-    # Get name and date from the selected row
+    # Get name from the selected row
     name = frame3.grid_slaves(row=row, column=col_name)
 
     if name:

@@ -65,21 +65,24 @@ def check_login():
     pseudo = entry_pseudo.get()
     password = entry_pw.get()
 
-    passaccess = database.check_user(pseudo, login_window)
+    try:
+        passaccess = database.check_user(pseudo, login_window)
 
-    hashpw = passaccess[0].encode("utf-8")
-    levelofaccess = passaccess[1]
-    password = password.encode("utf-8")
+        hashpw = passaccess[0].encode("utf-8")
+        levelofaccess = passaccess[1]
+        password = password.encode("utf-8")
 
-    if bcrypt.checkpw(password, hashpw):
-        try:
-            messagebox.showinfo(parent=login_window, title="info", message="Vous vous êtes connecté avec succès")
-            login_window.destroy()
-            menu.main(levelofaccess)
-        except ValueError as ve:
-            messagebox.showerror(parent=login_window, title="Erreur", message=f"{ve}")
-    else:
-        messagebox.showerror(parent=login_window, title="info", message="Vous vous êtes trompé de mot de passe")
+        if bcrypt.checkpw(password, hashpw):
+
+                messagebox.showinfo(parent=login_window, title="info", message="Vous vous êtes connecté avec succès")
+                login_window.destroy()
+                menu.main(levelofaccess)
+
+                messagebox.showerror(parent=login_window, title="Erreur", message=f"{ve}")
+        else:
+            messagebox.showerror(parent=login_window, title="info", message="Vous vous êtes trompé de mot de passe")
+    except ValueError as ve:
+        messagebox.showerror(parent=login_window, title="Erreur", message=f"{ve}")
 
 
 def register():
@@ -140,15 +143,15 @@ def check_register():
     elif not re.match(password_pattern, password):
         messagebox.showerror(parent=register_window, title="Erreur", message="Votre mot de passe n'est pas assez fort il doit comprendre une majuscule, une minuscule, un chiffre, un caractère spéciale et 8 caractère minimum")
     else:
-        hashpw = CRUD_users.hash_password(password)
-        levelofaccess = database.new_user(pseudo, hashpw, register_window, window)
-        levelofaccess = levelofaccess[0]
-        menu.main(levelofaccess)
-        msg_box = messagebox.askyesno(parent=register_window, title="Question", message="Félicitation vous faites partie de nos utilisateurs. Est-ce que vous voulez démarrer l'application")
-        if msg_box:
+        try:
+            hashpw = CRUD_users.hash_password(password)
+            levelofaccess = database.new_user(pseudo, hashpw, register_window)
+            levelofaccess = levelofaccess[0]
+            messagebox.showinfo(parent=register_window, title="Info", message="Félicitation vous faites partie de nos utilisateurs.")
             register_window.destroy()
-        else:
-            window.destroy()
+            menu.main(levelofaccess)
+        except ValueError as ve:
+            messagebox.showerror(parent=register_window, title="Erreur", message=f"{ve}")
 
 
 login()

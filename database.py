@@ -231,7 +231,7 @@ def update_result(time, nbok, nbtot, name, date):
         cursor.execute(query2, (*update_params.values(), data[0], date))
 
 
-def new_user(pseudo, password, register_window, window):
+def new_user(pseudo, password, register_window):
     global pseudonym
     pseudonym = pseudo
 
@@ -285,6 +285,7 @@ def read_user():
 
     return data
 
+
 def create_user_db(pseudo, password, access, create_user_window):
     global pseudonym
     pseudonym = pseudo
@@ -330,10 +331,14 @@ def update_user(user, hashpw, access, origin, update_user_window):
 
     if user == "":
         user_test = False
+    else:
         user_checked = user
+
     if hashpw == "":
         hashpw_test = False
+    else:
         hashpw_checked = hashpw
+
     if access == "":
         access_test = False
     elif 1 <= int(access) <= 3:

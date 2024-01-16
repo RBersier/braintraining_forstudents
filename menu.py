@@ -17,7 +17,7 @@ a_image = [None, None, None]  # Images array
 a_title = [None, None, None]  # Array of titles (e.g., GEO01)
 
 # Dictionary to map exercise names to their corresponding functions
-dict_games = {"geo01": geo01.open_window_geo_01, "info02": info02.open_window_info_02,"info05": info05.open_window_info_05}
+dict_games = {"geo01": geo01.open_window_geo_01, "info02": info02.open_window_info_02, "info05": info05.open_window_info_05}
 
 
 # Function to open other windows (exercises)
@@ -27,6 +27,7 @@ def exercise(event, exer):
 
 def return_login():
     from register_login import login
+    login()
 
 
 # Main part of your code
@@ -44,7 +45,7 @@ def main(levelofaccess):
     window.grid_columnconfigure((0, 1, 2), minsize=300, weight=1)
 
     # Title creation
-    lbl_title = tk.Label(window, text="TRAINING MENU", font=("Arial", 15))
+    lbl_title = tk.Label(window, text="MENU D'ENTRAINEMENT", font=("Arial", 15))
     lbl_title.grid(row=0, column=1, ipady=5, padx=40, pady=40)
 
     # Labels creation and positioning for exercises
@@ -59,7 +60,7 @@ def main(levelofaccess):
 
     # Buttons for displaying results and quitting
     if levelofaccess > 1:
-        btn_display = tk.Button(window, text="Display results", font=("Arial", 15))
+        btn_display = tk.Button(window, text="Résultat", font=("Arial", 15))
         btn_display.grid(row=1 + 2 * len(a_exercise) // 3, column=1)
         btn_display.bind("<Button-1>", lambda e: CRUD_results.display_result(e, window))
 
@@ -68,10 +69,10 @@ def main(levelofaccess):
     btn_finish.bind("<Button-1>", quit)
 
     if levelofaccess > 2:
-        btn_admin = tk.Button(window, text="Administration", font=("Arial", 15), command=lambda : CRUD_users.administration(window))
+        btn_admin = tk.Button(window, text="Administration", font=("Arial", 15), command=lambda: CRUD_users.administration(window))
         btn_admin.grid(row=2 + 2 * len(a_exercise) // 3, column=1)
 
-    btn_logout = tk.Button(window, text="Logout", font=("Arial", 15), command=lambda: [window.destroy(), return_login()])
+    btn_logout = tk.Button(window, text="Déconnexion", font=("Arial", 15), command=lambda: [window.destroy(), return_login()])
     btn_logout.grid(row=3 + 2 * len(a_exercise) // 3, column=1)
 
     # Main loop
