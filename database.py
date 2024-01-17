@@ -18,7 +18,7 @@ def open_dbconnection():
 
 
 # Save result in the database
-def save_results(exercise, pseudo, duration, nbtrials, nbok):
+def save_results(exercise, duration, nbtrials, nbok):
     open_dbconnection()
     cursor = db_connection.cursor()
 
@@ -27,11 +27,6 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
     cursor.execute(query3, (exercise,))
     data1 = cursor.fetchone()
 
-    # Check if the player exists
-    query4 = "SELECT id FROM players WHERE pseudonym = %s"
-    cursor.execute(query4, (pseudo,))
-    data2 = cursor.fetchone()
-
     # If the game doesn't exist, insert it
     if data1 is None:
         query1 = "INSERT INTO games (exercise) values (%s)"
@@ -39,14 +34,6 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
         query3 = "SELECT id FROM games WHERE exercise = %s"
         cursor.execute(query3, (exercise,))
         data1 = cursor.fetchone()
-
-    # If the player doesn't exist, insert it
-    elif data2 is None:
-        query2 = "INSERT INTO players (pseudonym) values (%s)"
-        cursor.execute(query2, (pseudo,))
-        query4 = "SELECT id FROM players WHERE pseudonym = %s"
-        cursor.execute(query4, (pseudo,))
-        data2 = cursor.fetchone()
 
     # Take the actual date and do a patern
     x = datetime.now()
@@ -58,7 +45,7 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
 
 
 # All data to show the results
-def read_result(pseudo, exercise, startdate, enddate, result_windows):
+def read_result(pseudo, exercise, startdate, enddate):
     open_dbconnection()
     cursor = db_connection.cursor()
 
@@ -92,7 +79,7 @@ def read_result(pseudo, exercise, startdate, enddate, result_windows):
 
 
 # Create a new result
-def create_result(student, date, time, exercise, nbok, nbtot, create_window):
+def create_result(student, date, time, exercise, nbok, nbtot):
     open_dbconnection()
     cursor = db_connection.cursor()
 
@@ -238,8 +225,9 @@ def update_result(time, nbok, nbtot, name, date):
         query2 = f"UPDATE games_has_players SET {set_clause} WHERE player_id = %s and startdate = %s"
         cursor.execute(query2, (*update_params.values(), data[0], date))
 
+
 # Function for add user on DB
-def new_user(pseudo, password, register_window):
+def new_user(pseudo, password):
     global pseudonym
     pseudonym = pseudo
 
@@ -264,7 +252,7 @@ def new_user(pseudo, password, register_window):
 
 
 # Function for checking if user exist on DB
-def check_user(pseudo, login_window):
+def check_user(pseudo):
     global pseudonym
     pseudonym = pseudo
 
@@ -335,7 +323,7 @@ def delete_user(name):
 
 
 # Function for update the information of user
-def update_user(user, hashpw, access, origin, update_user_window):
+def update_user(user, hashpw, access, origin):
     open_dbconnection()
     cursor = db_connection.cursor()
 

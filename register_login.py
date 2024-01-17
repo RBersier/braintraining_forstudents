@@ -73,7 +73,7 @@ def check_login():
     password = entry_pw.get()
 
     try:
-        passaccess = database.check_user(pseudo, login_window)
+        passaccess = database.check_user(pseudo)
         hashpw = passaccess[0].encode("utf-8")
         levelofaccess = passaccess[1]
         password = password.encode("utf-8")
@@ -158,7 +158,7 @@ def check_register():
         # Try to add user on DB
         try:
             hashpw = CRUD_users.hash_password(password)
-            levelofaccess = database.new_user(pseudo, hashpw, register_window)
+            levelofaccess = database.new_user(pseudo, hashpw)
             levelofaccess = levelofaccess[0]
             messagebox.showinfo(parent=register_window, title="Info", message="Félicitation vous faites partie de nos utilisateurs.")
             register_window.destroy()

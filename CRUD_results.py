@@ -117,7 +117,7 @@ def filters():
 
     # Retrieve data from the database
     try:
-        data = database.read_result(pseudo, exercise, startdate, enddate, results_window)[page]
+        data = database.read_result(pseudo, exercise, startdate, enddate)[page]
     except:
         running = False
 
@@ -237,7 +237,7 @@ def get_create():
         else:
             try:
                 # Insert data into the database
-                database.create_result(student, date, time, exercise, nbok, nbtot, create_window)
+                database.create_result(student, date, time, exercise, nbok, nbtot)
                 messagebox.showinfo(parent=create_window, title="Succès", message="Vos données ont bien été ajoutées à la base de données (la fenêtre s'est fermée)")
                 create_window.destroy()
                 filters()

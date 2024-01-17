@@ -259,7 +259,7 @@ def get_update_user(row, col_name):
                     return
             # Try to update data
             try:
-                database.update_user(user, hashpw, access, name_obj, update_user_window)
+                database.update_user(user, hashpw, access, name_obj)
             except ValueError as ve:
                 messagebox.showerror(parent=update_user_window, title="Erreur", message=f"{ve}")
             else:
