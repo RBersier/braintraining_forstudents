@@ -18,7 +18,7 @@ def open_dbconnection():
 
 
 # Save result in the database
-def save_results(exercise, duration, nbtrials, nbok):
+def save_results(exercise, duration, nbtrials, nbok, pseudo):
     open_dbconnection()
     cursor = db_connection.cursor()
 
@@ -26,6 +26,11 @@ def save_results(exercise, duration, nbtrials, nbok):
     query3 = "SELECT id FROM games WHERE exercise = %s"
     cursor.execute(query3, (exercise,))
     data1 = cursor.fetchone()
+
+    # Take id of player
+    query4 = "SELECT id FROM players WHERE pseudonym = %s"
+    cursor.execute(query4, (pseudo,))
+    data2 = cursor.fetchone()
 
     # If the game doesn't exist, insert it
     if data1 is None:

@@ -270,7 +270,7 @@ def get_update_user(row, col_name):
             messagebox.showerror(parent=update_user_window, title="Erreur", message="le mot de passe n'est pas écivalent à sa confirmation")
 
 
-# Function for hash an password
+# Function for hash a password
 def hash_password(password):
     password = password
     password_bytes = password.encode('utf-8')

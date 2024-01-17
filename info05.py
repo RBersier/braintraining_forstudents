@@ -47,6 +47,7 @@ def next_color(event):
     rgb = [random.randint(0,255),random.randint(0,255),random.randint(0,255)]
     display();
 
+
 def finish():
     global exercise, nbtrials, nbsuccess
 
@@ -66,7 +67,7 @@ def finish():
         duration = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
 
         # Enregistrer les valeurs dans la base de donnée
-        database.save_results(exercise, duration, nbtrials, nbsuccess)
+        database.save_results(exercise, duration, nbtrials, nbsuccess, pseudo)
 
         # Fermer la fenêtre et la base de donnée
         database.close_dbconnection()
@@ -126,6 +127,7 @@ def display_wheel_color():
     rect_mini_rgb=canvas.create_rectangle(0, 0, 0, 0, fill="#000000", width=0)
     line_hor_response = canvas.create_line(0, 0, 0, 0)  # little horizontal line for response cross on colorwheel
     line_vert_response = canvas.create_line(0, 0, 0, 0)  # little vertical line for response cross on colorwheel
+
 
 #converts rgb (ex:[128,128,128]) in hex color (ex: #808080)
 def h_color(rgb_color):

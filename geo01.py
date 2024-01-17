@@ -115,7 +115,7 @@ def finish():
         duration = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
 
         # Enregistrer les valeurs dans la base de données
-        database.save_results(exercise, duration, nbtrials, nbsuccess)
+        database.save_results(exercise, duration, nbtrials, nbsuccess, pseudo)
 
         # Fermer la fenêtre et la base de donnée
         database.close_dbconnection()
