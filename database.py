@@ -39,6 +39,7 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
         query3 = "SELECT id FROM games WHERE exercise = %s"
         cursor.execute(query3, (exercise,))
         data1 = cursor.fetchone()
+
     # If the player doesn't exist, insert it
     elif data2 is None:
         query2 = "INSERT INTO players (pseudonym) values (%s)"
@@ -47,6 +48,7 @@ def save_results(exercise, pseudo, duration, nbtrials, nbok):
         cursor.execute(query4, (pseudo,))
         data2 = cursor.fetchone()
 
+    # Take the actual date and do a patern
     x = datetime.now()
     date_hour = x.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -79,6 +81,8 @@ def read_result(pseudo, exercise, startdate, enddate, result_windows):
     query_data = []
     query_data.append([])
     actualN = 1
+
+    # Organise the results for doing page
     for user in range(len(data)):
         query_data[actualN - 1].append(data[user])
         if user == (actualN * 9):
@@ -106,7 +110,7 @@ def create_result(student, date, time, exercise, nbok, nbtot, create_window):
     if data1 is None:
         raise ValueError("Le champ Exercice ne peut contenir que GEO01, INFO02 ou INFO05")
     else:
-        # If the player doesn't exist, insert it
+        # If the player doesn't exist stop the process
         if data2 is None:
             raise ValueError("L'utilisateurs avec lequel vous voulez rajouter un résultat n'existe pas")
 
@@ -117,6 +121,7 @@ def create_result(student, date, time, exercise, nbok, nbtot, create_window):
         nbok_test = False
         nbtot_test = False
 
+        # Try for check the format of entry before insert
         try:
             # Check if the date is in the correct format
             date_checked = datetime.strptime(date, format_date)
@@ -176,7 +181,10 @@ def update_result(time, nbok, nbtot, name, date):
     cursor.execute(query1, (name,))
     data = cursor.fetchone()
 
+    # Time pattern
     format_time = "%H:%M:%S"
+
+    # Check if the entry are not empty and check the format of the entry
     if not time == "":
         try:
             # Check if the time is in the correct format
@@ -230,7 +238,7 @@ def update_result(time, nbok, nbtot, name, date):
         query2 = f"UPDATE games_has_players SET {set_clause} WHERE player_id = %s and startdate = %s"
         cursor.execute(query2, (*update_params.values(), data[0], date))
 
-
+# Function for add user on DB
 def new_user(pseudo, password, register_window):
     global pseudonym
     pseudonym = pseudo
@@ -238,10 +246,12 @@ def new_user(pseudo, password, register_window):
     open_dbconnection()
     cursor = db_connection.cursor()
 
+    # Check if the player exists
     query1 = "SELECT id FROM players WHERE pseudonym = %s"
     cursor.execute(query1, (pseudo,))
     data1 = cursor.fetchone()
 
+    # If the player doesn't exist, insert it with password
     if data1 is None:
         query2 = "INSERT INTO players (pseudonym, password) values (%s, %s)"
         cursor.execute(query2, (pseudo, password))
@@ -253,6 +263,7 @@ def new_user(pseudo, password, register_window):
         raise ValueError("Le pseudonyme entrer est déjà utilisé merci de changer")
 
 
+# Function for checking if user exist on DB
 def check_user(pseudo, login_window):
     global pseudonym
     pseudonym = pseudo
@@ -260,10 +271,12 @@ def check_user(pseudo, login_window):
     open_dbconnection()
     cursor = db_connection.cursor()
 
+    # Check if the player exists
     query1 = "SELECT id FROM players WHERE pseudonym = %s"
     cursor.execute(query1, (pseudo,))
     data1 = cursor.fetchone()
 
+    # If the player exist, return levelofaccess and password for checking later
     if data1 is None:
         raise ValueError("Le pseudonyme entrer n'existe pas")
     else:
@@ -273,7 +286,7 @@ def check_user(pseudo, login_window):
         return data2
 
 
-# All data to show the results
+# Take all user to show it
 def read_user():
     open_dbconnection()
     cursor = db_connection.cursor()
@@ -286,6 +299,7 @@ def read_user():
     return data
 
 
+# Function for create a new user on DB
 def create_user_db(pseudo, password, access, create_user_window):
     global pseudonym
     pseudonym = pseudo
@@ -293,10 +307,12 @@ def create_user_db(pseudo, password, access, create_user_window):
     open_dbconnection()
     cursor = db_connection.cursor()
 
+    # Check if the player exists
     query1 = "SELECT id FROM players WHERE pseudonym = %s"
     cursor.execute(query1, (pseudo,))
     data1 = cursor.fetchone()
 
+    # If the player doesn't exist check if access 1, 2 or 3 and insert it on DB
     if data1 is None:
         if 1 <= int(access) <= 3:
             query2 = "INSERT INTO players (pseudonym, password, levelofaccess) values (%s, %s, %s)"
@@ -308,20 +324,17 @@ def create_user_db(pseudo, password, access, create_user_window):
         raise ValueError("Le pseudonyme entrer est déjà utilisé merci de changer")
 
 
+# Function for delete user on DB
 def delete_user(name):
     open_dbconnection()
     cursor = db_connection.cursor()
-
-    # Get the player's ID
-    query1 = "SELECT id FROM players WHERE pseudonym = %s"
-    cursor.execute(query1, (name,))
-    data = cursor.fetchone()
 
     # Delete the result based on player ID and start date
     query2 = "DELETE FROM players WHERE pseudonym = %s"
     cursor.execute(query2, (name,))
 
 
+# Function for update the information of user
 def update_user(user, hashpw, access, origin, update_user_window):
     open_dbconnection()
     cursor = db_connection.cursor()
@@ -329,6 +342,7 @@ def update_user(user, hashpw, access, origin, update_user_window):
     user_test = True
     hashpw_test = True
 
+    # Check if entry are empty and the format where it need
     if user == "":
         user_test = False
     else:
@@ -349,15 +363,15 @@ def update_user(user, hashpw, access, origin, update_user_window):
 
     update_params = {}
 
-    # If time is valid, add it to the update parameters
+    # If user is valid, add it to the update parameters
     if user_test:
         update_params["pseudonym"] = user_checked
 
-    # If nbok is valid, add it to the update parameters
+    # If hashed password is valid, add it to the update parameters
     if hashpw_test:
         update_params["password"] = hashpw_checked
 
-    # If nbtot is valid, add it to the update parameters
+    # If level of access is valid, add it to the update parameters
     if access_test:
         update_params["levelofaccess"] = access_checked
 
@@ -372,7 +386,7 @@ def update_user(user, hashpw, access, origin, update_user_window):
 def close_dbconnection():
     db_connection.close()
 
-
+# Function for give pseudonym in the exercise
 def pseudo():
     global pseudonym
     return pseudonym

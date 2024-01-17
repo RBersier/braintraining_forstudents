@@ -14,9 +14,11 @@ import re
 import bcrypt
 
 
+# Function for create the main window to manage user
 def administration(window):
     global frame3, admin_window, windows
 
+    # Global variables for window management
     windows = window
     admin_window = tk.Toplevel(windows)
     admin_window.title("adminsistration")
@@ -50,6 +52,7 @@ def administration(window):
         label.grid(row=0, column=col, padx=35)
 
 
+# Function for show all user in DB
 def show_user():
     global frame3
     running = True
@@ -77,14 +80,13 @@ def show_user():
                 label = tk.Label(frame3, text=value, font=("Arial", 10))
                 label.grid(row=i + 1, column=col, padx=30)
                 # Add buttons for delete and update operations
-                button_delete = Button(frame3, text="supprimer", font=("Arial", 12), background="lightgrey",
-                                       command=lambda row=i + 1: delete_user(row, 0))
+                button_delete = Button(frame3, text="supprimer", font=("Arial", 12), background="lightgrey", command=lambda row=i + 1: delete_user(row, 0))
                 button_delete.grid(row=i + 1, column=7)
-                button_update = Button(frame3, text="modifier", font=("Arial", 12), background="lightgrey",
-                                       command=lambda row=i + 1: update_user(row, 0))
+                button_update = Button(frame3, text="modifier", font=("Arial", 12), background="lightgrey", command=lambda row=i + 1: update_user(row, 0))
                 button_update.grid(row=i + 1, column=8)
 
 
+# Function for create window where user can be create
 def create_user():
     global entry_user, entry_access, entry_password, entry_confpassword, create_user_window, windows
 
@@ -96,6 +98,7 @@ def create_user():
     hex_color_create_user = '#%02x%02x%02x' % rgb_color_create_user
     create_user_window.configure(bg=hex_color_create_user)
 
+    # Frames for layout
     frame1 = Frame(create_user_window, background="white")
     frame1.pack(side=TOP, pady=10)
     frame2 = Frame(create_user_window, background="white", width=900)
@@ -124,11 +127,13 @@ def create_user():
     button.grid(row=1, column=2)
 
 
-# Function to take the data for create row
+# Function for create user
 def get_create_user():
     global entry_user, entry_access, entry_password, entry_confpassword, create_user_window
 
+    # This is the password pattern
     password_pattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
+
     # Retrieve user input from entry widgets
     user = entry_user.get()
     access = entry_access.get()
@@ -139,6 +144,7 @@ def get_create_user():
     if user == "" or access == "" or password == "" or conf_pw == "":
         messagebox.showerror(parent=create_user_window, title="Erreur", message="Merci de bien remplir tous les champs pour pouvoir insérer un nouvel utilisateur")
     else:
+        # Check if password is at same of confirmation password and Check if password pattern is respected
         if password == conf_pw:
             if re.match(password_pattern, password):
                 try:
@@ -154,27 +160,28 @@ def get_create_user():
             messagebox.showerror(parent=create_user_window, title="Erreur", message="le mot de passe n'est pas écivalent à sa confirmation")
 
 
-# Function for delete data
+# Function for delete user
 def delete_user(row, col_name):
     global admin_window
     # Ask for confirmation before deleting
     result = messagebox.askquestion(parent=admin_window, title="Question", message="Êtes-vous sûr de vouloir supprimer cette ligne ?")
+
     if result == 'no':
         messagebox.showinfo(parent=admin_window, title="Info", message="Les données restent intactes")
     else:
-        # Get name and date from the selected row
+        # Get name from the selected row
         name = frame3.grid_slaves(row=row, column=col_name)
         if name:
             name_widget = name[0]
         if isinstance(name_widget, tk.Label):
             name_obj = name_widget.cget('text')
-        # Delete data from the database
+        # Delete user from the database
         database.delete_user(name_obj)
         messagebox.showinfo(parent=admin_window, title="Info", message="Les données ont été supprimées. N'oubliez pas d'actualiser.")
         show_user()
 
 
-# Function for update data
+# Function for update user
 def update_user(row, col_name):
     global entry_pseudo, entry_password, entry_confpw, entry_access,  update_user_window, windows
 
@@ -186,6 +193,7 @@ def update_user(row, col_name):
     hex_color_update_user = '#%02x%02x%02x' % rgb_color_update_user
     update_user_window.configure(bg=hex_color_update_user)
 
+    # Frames for layout
     frame1 = Frame(update_user_window, background="white")
     frame1.pack(side=TOP, pady=10)
     frame2 = Frame(update_user_window, background="white", width=900)
@@ -209,6 +217,7 @@ def update_user(row, col_name):
     entry_access = Entry(frame1, font=("Arial", 12), width=20)
     entry_access.grid(row=2, column=4, padx=10)
 
+    # Button to submit updated data
     button = Button(frame2, text="Terminer", font=("Arial", 12), background="lightgrey", command=lambda: get_update_user(row, col_name))
     button.grid(row=1, column=2)
 
@@ -218,7 +227,10 @@ def get_update_user(row, col_name):
     global entry_pseudo, entry_password, entry_confpw, entry_access,  update_user_window
 
     hashpw = ""
+
+    # This is the password pattern
     password_pattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
+
     # Retrieve updated data from entry widgets
     user = entry_pseudo.get()
     password = entry_password.get()
@@ -233,10 +245,11 @@ def get_update_user(row, col_name):
     if isinstance(name_widget, tk.Label):
         name_obj = name_widget.cget('text')
 
-    # Check if any field is empty
+    # Check if all field is empty
     if user == "" and password == "" and confpw == "" and access == "":
         messagebox.showerror(parent=update_user_window, title="Erreur", message="Aucun champ n'est rempli")
     else:
+        # Check if password is at same of confirmation password and Check if password pattern is respected and if password isn't null
         if password == confpw:
             if not password == "":
                 if re.match(password_pattern, password):
@@ -244,6 +257,7 @@ def get_update_user(row, col_name):
                 else:
                     messagebox.showerror(parent=update_user_window, title="Erreur", message="Votre mot de passe n'est pas assez fort il doit comprendre une majuscule, une minuscule, un chiffre, un caractère spéciale et 8 caractère minimum")
                     return
+            # Try to update data
             try:
                 database.update_user(user, hashpw, access, name_obj, update_user_window)
             except ValueError as ve:
@@ -256,6 +270,7 @@ def get_update_user(row, col_name):
             messagebox.showerror(parent=update_user_window, title="Erreur", message="le mot de passe n'est pas écivalent à sa confirmation")
 
 
+# Function for hash an password
 def hash_password(password):
     password = password
     password_bytes = password.encode('utf-8')

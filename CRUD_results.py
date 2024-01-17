@@ -15,9 +15,11 @@ import database
 from datetime import datetime
 
 
+# Function for create the main window to manage result
 def display_result(event, window):
     global frame3, entry_pseudo, entry_exercise, entry_startdate, entry_enddate, page, results_window, windows
 
+    # Global variables for window management
     windows = window
     results_window = tk.Toplevel(window)
     results_window.title("Résultats")
@@ -25,6 +27,8 @@ def display_result(event, window):
     rgb_color_result = (139, 201, 194)
     hex_color_result = '#%02x%02x%02x' % rgb_color_result
     results_window.configure(bg=hex_color_result)
+
+    # create a style for a progressbar
     style = ttk.Style()
     style.theme_use('clam')
     style.configure("red.Horizontal.TProgressbar", background='red')
@@ -44,7 +48,7 @@ def display_result(event, window):
     frame4.pack(side=TOP, pady=10)
 
     # Title
-    label_title = Label(frame1, text="TRAINING : AFFICHAGE", font=("Arial", 18, "bold"))
+    label_title = Label(frame1, text="ENTRAINEMENT : AFFICHAGE", font=("Arial", 18, "bold"))
     label_title.pack()
 
     # Filters Section
@@ -103,6 +107,7 @@ def filters():
     enddate = entry_enddate.get()
     running = True
 
+    # Check if stardate < enddate or equal in the temporality
     if not startdate == "" and not enddate == "":
         conv_startdate = datetime.strptime(startdate, "%Y-%m-%d")
         conv_enddate = datetime.strptime(enddate, "%Y-%m-%d")
@@ -156,6 +161,7 @@ def filters():
                 button_update.grid(row=i + 1, column=8)
 
 
+# Function to create results
 def create():
     global entry_Student, entry_Date, entry_Time, entry_Exercise, entry_Nbok, entry_Nbtot, create_window
 
@@ -167,6 +173,7 @@ def create():
     hex_color_result = '#%02x%02x%02x' % rgb_color_result
     create_window.configure(bg=hex_color_result)
 
+    # Frames for layout
     frame1 = Frame(create_window, background="white")
     frame1.pack(side=TOP, pady=10)
     frame2 = Frame(create_window, background="white", width=900)
@@ -217,10 +224,12 @@ def get_create():
     nbtot = entry_Nbtot.get()
     running = True
 
+    # Check if nbok < nbtot or equal
     if not nbok == "" and not nbtot == "":
         if not nbok <= nbtot:
             messagebox.showerror(parent=create_window, title="Erreur", message="Merci de bien remplir faire en sorte que nbok doit être inférieur à nbtot")
             running = False
+
     if running:
         # Check if any field is empty
         if student == "" or date == "" or time == "" or exercise == "" or nbok == "" or nbtot == "":
@@ -243,6 +252,7 @@ def delete(row, col_name, col_date):
     if result == 'no':
         messagebox.showinfo(parent=results_window, title="Info", message="Les données restent intactes")
     else:
+
         # Get name and date from the selected row
         name = frame3.grid_slaves(row=row, column=col_name)
         date = frame3.grid_slaves(row=row, column=col_date)
@@ -252,6 +262,7 @@ def delete(row, col_name, col_date):
         if isinstance(name_widget and date_widget, tk.Label):
             name_obj = name_widget.cget('text')
             date_obj = date_widget.cget('text')
+
         # Delete data from the database
         database.delete_result(name_obj, date_obj)
         messagebox.showinfo(parent=results_window, title="Info", message="Les données ont été supprimées. N'oubliez pas d'actualiser.")
@@ -270,6 +281,7 @@ def update(row, col_name, col_date):
     hex_color_update = '#%02x%02x%02x' % rgb_color_update
     update_window.configure(bg=hex_color_update)
 
+    # Frames for layout
     frame1 = Frame(update_window, background="white")
     frame1.pack(side=TOP, pady=10)
     frame2 = Frame(update_window, background="white", width=900)
@@ -289,6 +301,7 @@ def update(row, col_name, col_date):
     entry_Nbtot = Entry(frame1, font=("Arial", 12), width=20)
     entry_Nbtot.grid(row=2, column=3, padx=10)
 
+    # Buttons
     button = Button(frame2, text="Terminer", font=("Arial", 12), background="lightgrey", command=lambda: get_update(row, col_name, col_date, update_window))
     button.grid(row=1, column=2)
 
@@ -303,10 +316,12 @@ def get_update(row, col_name, col_date, update_window):
     nbtot = entry_Nbtot.get()
     running = True
 
+    # Check if nbok < nbtot or equal
     if not nbok == "" and not nbtot == "":
         if not nbok <= nbtot:
             messagebox.showerror(parent=update_window, title="Erreur", message="Merci de bien remplir faire en sorte que nbok doit être inférieur à nbtot")
             running = False
+
     if running:
         # Get name and date from the selected row
         name = frame3.grid_slaves(row=row, column=col_name)
@@ -318,7 +333,6 @@ def get_update(row, col_name, col_date, update_window):
         if isinstance(name_widget and date_widget, tk.Label):
             name_obj = name_widget.cget('text')
             date_obj = date_widget.cget('text')
-
 
         # Check if any field is empty
         if time == "" and nbok == "" and nbtot == "":
@@ -333,7 +347,7 @@ def get_update(row, col_name, col_date, update_window):
             except ValueError as ve:
                 messagebox.showerror(parent=update_window, title="Erreur", message=f"{ve}")
 
-
+# Function for turn next page
 def nextpage():
     global page, data
 
@@ -344,6 +358,7 @@ def nextpage():
         messagebox.showinfo(parent=results_window, title="Info", message="Vous êtes arrivé à la page maximum il n y a pas de donnée après")
 
 
+# Function for turn previous page
 def previouspage():
     global page
 

@@ -22,15 +22,16 @@ dict_games = {"geo01": geo01.open_window_geo_01, "info02": info02.open_window_in
 
 # Function to open other windows (exercises)
 def exercise(event, exer):
+    # Call the corresponding exercise function based on the dictionary
     dict_games[exer](window)
 
 
 def return_login():
+    # Import the login function from register_login module
     from register_login import login
     login()
 
 
-# Main part of your code
 # Main window creation
 def main(levelofaccess):
     global window
