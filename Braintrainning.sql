@@ -35,6 +35,8 @@ DROP TABLE IF EXISTS `Braintrainning`.`Players` ;
 CREATE TABLE IF NOT EXISTS `Braintrainning`.`Players` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `pseudonym` VARCHAR(50) NOT NULL,
+  `password` VARCHAR(72) NOT NULL,
+  `levelofaccess` INT NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `pseudonym_UNIQUE` (`pseudonym` ASC) VISIBLE)
 ENGINE = InnoDB;
@@ -64,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `Braintrainning`.`Games_has_Players` (
   CONSTRAINT `fk_Games_has_Players_Players1`
     FOREIGN KEY (`player_id`)
     REFERENCES `Braintrainning`.`Players` (`id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
