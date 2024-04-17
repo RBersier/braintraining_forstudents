@@ -97,6 +97,11 @@ def display():
     canvas.coords(line_hor_response, x-8, y, x + 8, y)
 
     canvas.itemconfig(lbl_distance,text=f"Distance between the 2 colors: {dist_color(rgb,rgb_response)}")
+    entry_response.delete(0,tk.END)
+    hexa_response = h_color(rgb_response)[:7]
+    entry_response.insert(0,hexa_response)
+
+
 
 
 # only called at the beginning
@@ -127,6 +132,7 @@ def display_wheel_color():
     rect_mini_rgb=canvas.create_rectangle(0, 0, 0, 0, fill="#000000", width=0)
     line_hor_response = canvas.create_line(0, 0, 0, 0)  # little horizontal line for response cross on colorwheel
     line_vert_response = canvas.create_line(0, 0, 0, 0)  # little vertical line for response cross on colorwheel
+
 
 
 #converts rgb (ex:[128,128,128]) in hex color (ex: #808080)

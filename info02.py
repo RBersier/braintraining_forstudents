@@ -80,7 +80,7 @@ def finish():
 def test(event):
     global n2, nbsuccess, nbtrials
     # Fonction pour tester si la valeur est juste
-    n2 = float(entry_n2.get().replace(" ", ""))
+    n2 = float(entry_n2.get().replace(" ", "").replace(",", "."))
     nbtrials+=1
     success = (abs(n1 / n2 / rapport - 1) < 0.01) #tolerance 1%
     if success:
